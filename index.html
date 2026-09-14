@@ -1,10 +1,3 @@
-這是我直接將你提供的完整 HTML 程式碼帶入，並且確保外圍的八卦梯形（SVG 扇形環）維持原本完美的放射狀八卦形式、中間太極拆開與右下角爻序堆疊邏輯全部保留的乾淨版本。
-
-你可以直接複製下方這段完整的程式碼覆蓋你的檔案：
-
-HTML
-
-
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
@@ -71,46 +64,42 @@ HTML
             justify-content: center;
         }
 
-        /* 整個外環八卦 SVG 容器 */
-        .bagua-ring-svg {
+        /* 外圍正常的八卦梯形環繞（保持不動，不消失） */
+        .trapezoid-ring {
             position: absolute;
-            width: 480px;
-            height: 480px;
+            width: 100%;
+            height: 100%;
             pointer-events: none;
         }
 
-        .bagua-slice {
-            fill: var(--panel-bg);
-            stroke: rgba(255, 51, 51, 0.3);
-            stroke-width: 1.5;
-            cursor: pointer;
+        .trap-block {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 24px;
+            height: 40px;
+            background: var(--panel-bg);
+            border: 1px solid rgba(255, 51, 51, 0.5);
+            clip-path: polygon(20% 0%, 80% 0%, 100% 100%, 0% 100%);
+            transform-origin: 50% 180px;
             pointer-events: auto;
-            transition: all 0.25s ease;
+            cursor: pointer;
         }
 
-        .bagua-slice:hover {
-            fill: rgba(255, 51, 51, 0.15);
-            stroke: var(--neon-red);
-            filter: drop-shadow(0 0 8px var(--neon-red));
+        .trap-block:hover {
+            border-color: var(--neon-red);
+            background: rgba(255, 51, 51, 0.15);
+            box-shadow: 0 0 10px var(--neon-red);
         }
 
-        .bagua-text {
-            font-size: 14px;
-            fill: #ffcccc;
-            font-family: 'Courier New', Courier, monospace;
-            text-anchor: middle;
-            dominant-baseline: middle;
-            pointer-events: none;
-        }
-
-        .bagua-name {
-            font-size: 10px;
-            fill: var(--neon-red);
-            font-family: 'Courier New', Courier, monospace;
-            text-anchor: middle;
-            dominant-baseline: middle;
-            pointer-events: none;
-        }
+        .trap-1  { transform: translate(-50%, -50%) rotate(0deg) translateY(-180px); }
+        .trap-2  { transform: translate(-50%, -50%) rotate(45deg) translateY(-180px); }
+        .trap-3  { transform: translate(-50%, -50%) rotate(90deg) translateY(-180px); }
+        .trap-4  { transform: translate(-50%, -50%) rotate(135deg) translateY(-180px); }
+        .trap-5  { transform: translate(-50%, -50%) rotate(180deg) translateY(-180px); }
+        .trap-6  { transform: translate(-50%, -50%) rotate(225deg) translateY(-180px); }
+        .trap-7  { transform: translate(-50%, -50%) rotate(270deg) translateY(-180px); }
+        .trap-8  { transform: translate(-50%, -50%) rotate(315deg) translateY(-180px); }
 
         /* 中央互動核心 */
         .core-area {
@@ -124,7 +113,7 @@ HTML
             z-index: 10;
         }
 
-        /* 雙獨立太極魚對組：絕對獨立的兩條魚，各自帶有魚眼 */
+        /* 雙獨立太極魚對組：對應手稿第一張圖的拆解 */
         .taijitu-pair {
             position: absolute;
             width: 130px;
@@ -145,22 +134,22 @@ HTML
         .fish-left { left: 0; }
         .fish-right { right: 0; }
 
-        /* 點擊後：兩隻獨立太極魚向左右徹底分開並淡出消失 */
+        /* 點擊後：中央太極展開並消失（對應手稿「展開後消失」） */
         .core-area.active .taijitu-pair {
             opacity: 0;
-            transform: scale(0.5);
+            transform: scale(1.5);
             pointer-events: none;
         }
 
         .core-area.active .fish-left {
-            transform: translateX(-55px);
+            transform: translateX(-70px);
         }
 
         .core-area.active .fish-right {
-            transform: translateX(55px);
+            transform: translateX(70px);
         }
 
-        /* 中間爻卦區：絕對無邊框，由下往上堆疊 */
+        /* 中間爻卦區：由下往上堆疊 */
         .hexagram-slot {
             position: absolute;
             display: flex;
@@ -181,7 +170,6 @@ HTML
             pointer-events: auto;
         }
 
-        /* 嚴格規定：#yao-1 在最下方，#yao-6 在最上方 */
         #yao-6 { order: 1; }
         #yao-5 { order: 2; }
         #yao-4 { order: 3; }
@@ -262,53 +250,21 @@ HTML
 
     <header>
         <h1>Cyber I-Ching v6.0</h1>
-        <p>完美放射狀扇形八卦 ＋ 獨立雙太極魚分離淡出 ＋ 無邊框由下往上爻序</p>
+        <p>外圍八卦梯形常駐 ＋ 中間太極展開後消失 ＋ 由下往上爻序</p>
     </header>
 
     <div class="stage-container">
-        <!-- 真正標準的放射狀扇形八卦環 -->
-        <svg class="bagua-ring-svg" viewBox="0 0 480 480">
-            <g class="bagua-slice-group" draggable="true" data-gua="離">
-                <path class="bagua-slice" d="M 211.72,100 A 140,140 0 0,1 268.28,100 L 293.18,22 A 220,220 0 0,0 186.82,22 Z" />
-                <text x="240" y="55" class="bagua-text">☲</text>
-                <text x="240" y="72" class="bagua-name">離</text>
-            </g>
-            <g class="bagua-slice-group" draggable="true" data-gua="巽">
-                <path class="bagua-slice" d="M 300.00,140 A 140,140 0 0,1 340.00,180 L 415.56,124.44 A 220,220 0 0,0 355.56,64.44 Z" />
-                <text x="350" y="98" class="bagua-text">☴</text>
-                <text x="365" y="118" class="bagua-name">巽</text>
-            </g>
-            <g class="bagua-slice-group" draggable="true" data-gua="震">
-                <path class="bagua-slice" d="M 340,211.72 A 140,140 0 0,1 340,268.28 L 418,293.18 A 220,220 0 0,0 418,186.82 Z" />
-                <text x="390" y="240" class="bagua-text">☳</text>
-                <text x="390" y="258" class="bagua-name">震</text>
-            </g>
-            <g class="bagua-slice-group" draggable="true" data-gua="艮">
-                <path class="bagua-slice" d="M 300.00,340 A 140,140 0 0,1 268.28,380 L 355.56,415.56 A 220,220 0 0,0 415.56,355.56 Z" />
-                <text x="350" y="382" class="bagua-text">☶</text>
-                <text x="365" y="362" class="bagua-name">艮</text>
-            </g>
-            <g class="bagua-slice-group" draggable="true" data-gua="坤">
-                <path class="bagua-slice" d="M 268.28,380 A 140,140 0 0,1 211.72,380 L 186.82,458 A 220,220 0 0,0 293.18,458 Z" />
-                <text x="240" y="425" class="bagua-text">☷</text>
-                <text x="240" y="408" class="bagua-name">坤</text>
-            </g>
-            <g class="bagua-slice-group" draggable="true" data-gua="兌">
-                <path class="bagua-slice" d="M 140.00,340 A 140,140 0 0,1 100.00,300 L 64.44,355.56 A 220,220 0 0,0 124.44,415.56 Z" />
-                <text x="130" y="382" class="bagua-text">☱</text>
-                <text x="115" y="362" class="bagua-name">兌</text>
-            </g>
-            <g class="bagua-slice-group" draggable="true" data-gua="坎">
-                <path class="bagua-slice" d="M 100,268.28 A 140,140 0 0,1 100,211.72 L 22,186.82 A 220,220 0 0,0 22,293.18 Z" />
-                <text x="90" y="240" class="bagua-text">☵</text>
-                <text x="108" y="240" class="bagua-name">坎</text>
-            </g>
-            <g class="bagua-slice-group" draggable="true" data-gua="乾">
-                <path class="bagua-slice" d="M 140.00,140 A 140,140 0 0,1 211.72,100 L 186.82,22 A 220,220 0 0,0 64.44,124.44 Z" />
-                <text x="130" y="98" class="bagua-text">☰</text>
-                <text x="115" y="118" class="bagua-name">乾</text>
-            </g>
-        </svg>
+        <!-- 外圍梯形環繞區塊（保持不動） -->
+        <div class="trapezoid-ring">
+            <div class="trap-block trap-1" title="乾"></div>
+            <div class="trap-block trap-2" title="兌"></div>
+            <div class="trap-block trap-3" title="離"></div>
+            <div class="trap-block trap-4" title="震"></div>
+            <div class="trap-block trap-5" title="巽"></div>
+            <div class="trap-block trap-6" title="坎"></div>
+            <div class="trap-block trap-7" title="艮"></div>
+            <div class="trap-block trap-8" title="坤"></div>
+        </div>
 
         <!-- 中央互動核心 -->
         <div class="core-area" id="coreArea" title="點擊進行擲爻">
@@ -338,7 +294,7 @@ HTML
         </div>
     </div>
 
-    <div class="status-msg" id="statusMsg">系統就緒：點擊中央獨立雙魚開始由下往上擲初爻</div>
+    <div class="status-msg" id="statusMsg">系統就緒：點擊中央太極開始由下往上擲初爻</div>
 
     <div class="control-panel">
         <button class="cyber-btn" id="tossBtn">擲爻 (1/6)</button>
@@ -360,7 +316,7 @@ HTML
             }
 
             if (step === 0) {
-                coreArea.classList.add('active');
+                coreArea.classList.add('active'); // 僅觸發中央太極展開並消失，外圍梯形保持不動
             }
 
             step++;
@@ -388,7 +344,6 @@ HTML
 
         tossBtn.addEventListener('click', executeToss);
         coreArea.addEventListener('click', (e) => {
-            if (e.target.closest('.bagua-slice-group')) return;
             executeToss();
         });
 
@@ -396,30 +351,12 @@ HTML
             step = 0;
             coreArea.classList.remove('active');
             tossBtn.textContent = "擲爻 (1/6)";
-            statusMsg.textContent = "系統已重置，請重新點擊太極雙魚擲爻。";
+            statusMsg.textContent = "系統已重置，請重新點擊中央太極擲爻。";
             
             for (let i = 1; i <= maxStep; i++) {
                 document.getElementById(`yao-${i}`).className = "yao-line";
             }
         });
-
-        document.querySelectorAll('.bagua-slice-group').forEach(group => {
-            group.addEventListener('dragstart', (e) => {
-                e.dataTransfer.setData('text/plain', group.dataset.gua);
-            });
-            group.setAttribute('draggable', 'true');
-        });
-
-        coreArea.addEventListener('dragover', (e) => e.preventDefault());
-        coreArea.addEventListener('drop', (e) => {
-            e.preventDefault();
-            const gua = e.dataTransfer.getData('text/plain');
-            if (step < 6) {
-                statusMsg.textContent = `請先完成六次擲爻，目前進度 (${step}/6)`;
-                return;
-            }
-            statusMsg.textContent = `成功將 [ ${gua}卦 ] 鎖入核心區域！`;
-        });
-    </script> 
+    </script>
 </body>
 </html>
