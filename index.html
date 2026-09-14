@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cyber I-Ching 賽博易經占卜儀 v1.0 (重構版)</title>
+    <title>Cyber I-Ching 賽博易經占卜儀 v2.0</title>
     <style>
         :root {
-            --bg-color: #030305;
-            --neon-cyan: #00f3ff;
+            --bg-color: #050507;
+            --neon-red: #ff3333;
             --neon-amber: #ffb700;
-            --panel-bg: rgba(8, 12, 24, 0.95);
-            --border-glow: rgba(0, 243, 255, 0.4);
+            --panel-bg: rgba(15, 8, 8, 0.95);
+            --border-glow: rgba(255, 51, 51, 0.4);
         }
 
         * {
@@ -30,9 +30,9 @@
             justify-content: center;
             overflow: hidden;
             background-image: 
-                radial-gradient(circle at 50% 50%, rgba(0, 243, 255, 0.04) 0%, transparent 70%),
-                linear-gradient(rgba(0, 243, 255, 0.02) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 243, 255, 0.02) 1px, transparent 1px);
+                radial-gradient(circle at 50% 50%, rgba(255, 51, 51, 0.03) 0%, transparent 70%),
+                linear-gradient(rgba(255, 51, 51, 0.015) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 51, 51, 0.015) 1px, transparent 1px);
             background-size: 100% 100%, 40px 40px, 40px 40px;
         }
 
@@ -46,13 +46,13 @@
 
         header h1 {
             font-size: 1.1rem;
-            color: var(--neon-cyan);
-            text-shadow: 0 0 10px rgba(0, 243, 255, 0.4);
+            color: var(--neon-red);
+            text-shadow: 0 0 10px rgba(255, 51, 51, 0.4);
         }
 
         header p {
             font-size: 0.65rem;
-            color: #6c757d;
+            color: #888;
             margin-top: 4px;
         }
 
@@ -66,73 +66,86 @@
             justify-content: center;
         }
 
-        /* 中央互動核心 (未展開時是圓形太極) */
+        /* 中央互動核心 */
         .core-area {
             position: absolute;
-            width: 140px;
-            height: 140px;
+            width: 160px;
+            height: 160px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             z-index: 10;
-            transition: width 0.5s ease;
         }
 
-        /* 展開後變寬，左右分離，中間留空放爻 */
-        .core-area.active {
-            width: 380px;
-            justify-content: space-between;
-        }
-
-        /* 完整太極 */
+        /* 完整傳統太極 (未展開時顯示) */
         .taiji-united {
+            position: absolute;
             width: 140px;
             height: 140px;
             border-radius: 50%;
             overflow: hidden;
-            border: 2px solid var(--neon-cyan);
-            box-shadow: 0 0 20px rgba(0, 243, 255, 0.3);
-            background: #000;
+            border: 2px solid var(--neon-red);
+            box-shadow: 0 0 15px rgba(255, 51, 51, 0.3);
+            background: #fff;
+            transition: opacity 0.6s ease, transform 0.6s ease;
         }
 
+        /* 展開後太極淡出 */
         .core-area.active .taiji-united {
-            display: none;
+            opacity: 0;
+            transform: scale(0.8);
+            pointer-events: none;
         }
 
-        /* 左右獨立區塊 (預設隱藏，點擊後出現) */
+        /* 左右獨立區塊（對應手繪：分別的獨立區塊） */
         .taiji-split-left, .taiji-split-right {
-            display: none;
-            width: 90px;
-            height: 140px;
-            background: var(--panel-bg);
-            border: 2px solid var(--neon-cyan);
-            border-radius: 12px;
-            box-shadow: 0 0 15px rgba(0, 243, 255, 0.3);
-            align-items: center;
-            justify-content: center;
+            position: absolute;
+            opacity: 0;
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: none;
         }
 
-        .core-area.active .taiji-split-left,
+        .core-area.active .taiji-split-left {
+            opacity: 1;
+            transform: translateX(-110px);
+        }
+
         .core-area.active .taiji-split-right {
-            display: flex;
+            opacity: 1;
+            transform: translateX(110px);
         }
 
-        /* 中間爻卦區：由下往上堆疊 (flex-direction: column-reverse) */
+        /* 中間爻卦區：由下往上堆疊 (flex-direction: column)配合底部初爻 */
         .hexagram-slot {
-            display: none;
-            flex-direction: column-reverse;
+            position: absolute;
+            display: flex;
+            flex-direction: column; /* 由上到下排 DOM，但配合顛倒順序讓 #yao-1 在最下方 */
             gap: 6px;
-            width: 120px;
-            padding: 12px;
-            background: rgba(5, 10, 20, 0.95);
-            border: 1px dashed rgba(0, 243, 255, 0.4);
+            width: 110px;
+            padding: 10px;
+            background: rgba(10, 5, 5, 0.9);
+            border: 1px dashed rgba(255, 51, 51, 0.4);
             border-radius: 8px;
+            opacity: 0;
+            transform: scale(0.9);
+            transition: all 0.5s ease;
+            pointer-events: none;
         }
 
         .core-area.active .hexagram-slot {
-            display: flex;
+            opacity: 1;
+            transform: scale(1);
+            pointer-events: auto;
         }
+
+        /* 嚴格確保 #yao-1 在最下方，#yao-6 在最上方 */
+        #yao-6 { order: 1; }
+        #yao-5 { order: 2; }
+        #yao-4 { order: 3; }
+        #yao-3 { order: 4; }
+        #yao-2 { order: 5; }
+        #yao-1 { order: 6; }
 
         .yao-line {
             height: 6px;
@@ -144,15 +157,15 @@
 
         .yao-line.dashed {
             opacity: 1;
-            border: 1px dashed rgba(0, 243, 255, 0.7);
+            border: 1px dashed rgba(255, 51, 51, 0.8);
             background: transparent;
         }
 
         .yao-line.solid {
             opacity: 1;
             border: none;
-            background: var(--neon-cyan);
-            box-shadow: 0 0 6px var(--neon-cyan);
+            background: var(--neon-red);
+            box-shadow: 0 0 6px var(--neon-red);
         }
 
         .yao-line.flash {
@@ -172,13 +185,14 @@
             pointer-events: none;
         }
 
-        /* 梯形區塊：正向、不旋轉、上窄下寬朝內縮 */
+        /* 梯形區塊：正向、上寬下窄（朝太極中心內縮）、紅黑配色 */
         .bagua-block {
             position: absolute;
             width: 80px;
             height: 50px;
             background: var(--panel-bg);
-            clip-path: polygon(15% 0%, 85% 0%, 100% 100%, 0% 100%);
+            /* 上寬下窄，朝中心內縮 */
+            clip-path: polygon(0% 0%, 100% 0%, 85% 100%, 15% 100%);
             border: 1px solid var(--border-glow);
             display: flex;
             flex-direction: column;
@@ -188,29 +202,30 @@
             pointer-events: auto;
             transition: all 0.2s;
             user-select: none;
+            box-shadow: 0 0 8px rgba(255, 51, 51, 0.15);
         }
 
         .bagua-block:hover {
-            border-color: var(--neon-cyan);
-            background: rgba(0, 243, 255, 0.15);
-            box-shadow: 0 0 12px var(--neon-cyan);
+            border-color: var(--neon-red);
+            background: rgba(255, 51, 51, 0.15);
+            box-shadow: 0 0 12px var(--neon-red);
             transform: scale(1.05);
         }
 
         .bagua-block .symbol {
             font-size: 1rem;
             font-weight: bold;
-            color: #fff;
+            color: #ffcccc;
             line-height: 1;
         }
 
         .bagua-block .name {
             font-size: 0.55rem;
-            color: var(--neon-cyan);
+            color: var(--neon-red);
             margin-top: 2px;
         }
 
-        /* 絕對直立不旋轉的 8 個方位座標 */
+        /* 8個方位座標（梯形尖端朝內指向中心） */
         .pos-li   { top: 10px;  left: 200px; }
         .pos-kun  { top: 75px;  left: 335px; }
         .pos-dui  { top: 215px; left: 400px; }
@@ -229,21 +244,21 @@
 
         .cyber-btn {
             background: transparent;
-            border: 1px solid var(--neon-cyan);
-            color: var(--neon-cyan);
+            border: 1px solid var(--neon-red);
+            color: var(--neon-red);
             padding: 8px 18px;
             font-size: 0.7rem;
             letter-spacing: 2px;
             cursor: pointer;
             text-transform: uppercase;
             transition: all 0.3s;
-            box-shadow: inset 0 0 5px rgba(0, 243, 255, 0.2);
+            box-shadow: inset 0 0 5px rgba(255, 51, 51, 0.2);
         }
 
         .cyber-btn:hover {
-            background: var(--neon-cyan);
-            color: var(--bg-color);
-            box-shadow: 0 0 15px var(--neon-cyan);
+            background: var(--neon-red);
+            color: #000;
+            box-shadow: 0 0 15px var(--neon-red);
         }
 
         .status-msg {
@@ -264,12 +279,12 @@
 <body>
 
     <header>
-        <h1>Cyber I-Ching v1.0</h1>
-        <p>太極左右分離 + 由下往上爻卦 + 正向內縮梯形</p>
+        <h1>Cyber I-Ching v2.0</h1>
+        <p>太極展開分離與消散 ＋ 由下往上初爻堆疊 ＋ 紅黑內縮八卦</p>
     </header>
 
     <div class="stage-container">
-        <!-- 外環八卦 (正向不旋轉、內縮梯形) -->
+        <!-- 外環八卦（紅黑配色、內縮梯形） -->
         <div class="bagua-ring">
             <div class="bagua-block pos-li" draggable="true" data-gua="離"><span class="symbol">☲</span><span class="name">離</span></div>
             <div class="bagua-block pos-kun" draggable="true" data-gua="坤"><span class="symbol">☷</span><span class="name">坤</span></div>
@@ -284,25 +299,25 @@
         <!-- 中央互動核心 -->
         <div class="core-area" id="coreArea" title="點擊進行擲爻">
             
-            <!-- 未展開完整太極 -->
+            <!-- 完整傳統太極 (未展開) -->
             <div class="taiji-united">
                 <svg width="100%" height="100%" viewBox="0 0 100 100">
-                    <path d="M50,0 A50,50 0 0,1 50,100 A25,25 0 0,1 50,50 A25,25 0 0,0 50,0 Z" fill="#030305"/>
-                    <path d="M50,100 A50,50 0 0,1 50,0 A25,25 0 0,1 50,50 A25,25 0 0,0 50,100 Z" fill="#00f3ff"/>
-                    <circle cx="50" cy="25" r="5" fill="#00f3ff"/>
-                    <circle cx="50" cy="75" r="5" fill="#030305"/>
+                    <path d="M50,0 A50,50 0 0,1 50,100 A25,25 0 0,1 50,50 A25,25 0 0,0 50,0 Z" fill="#000000"/>
+                    <path d="M50,100 A50,50 0 0,1 50,0 A25,25 0 0,1 50,50 A25,25 0 0,0 50,100 Z" fill="#ffffff"/>
+                    <circle cx="50" cy="25" r="5" fill="#ffffff"/>
+                    <circle cx="50" cy="75" r="5" fill="#000000"/>
                 </svg>
             </div>
 
-            <!-- 分離左半塊：黑魚 + 上方小圓點 -->
+            <!-- 分離左半塊：獨立黑色魚塊 -->
             <div class="taiji-split-left">
-                <svg width="60" height="120" viewBox="0 0 50 100">
-                    <path d="M50,0 A50,50 0 0,1 50,100 A25,25 0 0,1 50,50 A25,25 0 0,0 50,0 Z" fill="#030305"/>
-                    <circle cx="42" cy="25" r="5" fill="#00f3ff"/>
+                <svg width="50" height="100" viewBox="0 0 50 100">
+                    <path d="M50,0 A50,50 0 0,1 50,100 A25,25 0 0,1 50,50 A25,25 0 0,0 50,0 Z" fill="#000000" stroke="var(--neon-red)" stroke-width="1.5"/>
+                    <circle cx="42" cy="25" r="5" fill="#ffffff"/>
                 </svg>
             </div>
 
-            <!-- 中間爻卦槽：嚴格由下往上 (yao-1 在最底) -->
+            <!-- 中間爻卦槽：由下往上（#yao-1 在最下方） -->
             <div class="hexagram-slot">
                 <div class="yao-line" id="yao-6"></div>
                 <div class="yao-line" id="yao-5"></div>
@@ -312,11 +327,11 @@
                 <div class="yao-line" id="yao-1"></div>
             </div>
 
-            <!-- 分離右半塊：白魚 + 下方小圓點 -->
+            <!-- 分離右半塊：獨立白色魚塊 -->
             <div class="taiji-split-right">
-                <svg width="60" height="120" viewBox="0 0 50 100">
-                    <path d="M0,100 A50,50 0 0,1 0,0 A25,25 0 0,1 0,50 A25,25 0 0,0 0,100 Z" fill="#00f3ff"/>
-                    <circle cx="8" cy="75" r="5" fill="#030305"/>
+                <svg width="50" height="100" viewBox="0 0 50 100">
+                    <path d="M0,100 A50,50 0 0,1 0,0 A25,25 0 0,1 0,50 A25,25 0 0,0 0,100 Z" fill="#ffffff" stroke="var(--neon-red)" stroke-width="1.5"/>
+                    <circle cx="8" cy="75" r="5" fill="#000000"/>
                 </svg>
             </div>
 
@@ -340,12 +355,12 @@
 
         function executeToss() {
             if (step >= maxStep) {
-                statusMsg.textContent = "六爻已全數擲畢，請將外圈卦象拖曳填入中央區域。";
+                statusMsg.textContent = "六爻已全數擲畢，結構已完成。";
                 return;
             }
 
             if (step === 0) {
-                coreArea.classList.add('active');
+                coreArea.classList.add('active'); // 觸發太極分離、淡出與爻槽展開
             }
 
             step++;
@@ -354,20 +369,20 @@
 
             if (dice < 0.25) {
                 currentYao.className = "yao-line flash";
-                statusMsg.textContent = `第 ${step} 爻（由下往上）生成：捕捉到變爻閃爍！`;
+                statusMsg.textContent = `第 ${step} 爻（初爻起算）生成：捕捉到變爻閃爍！`;
             } else if (dice < 0.6) {
                 currentYao.className = "yao-line dashed";
-                statusMsg.textContent = `第 ${step} 爻（由下往上）生成：虛線建立。`;
+                statusMsg.textContent = `第 ${step} 爻（初爻起算）生成：虛線建立。`;
             } else {
                 currentYao.className = "yao-line solid";
-                statusMsg.textContent = `第 ${step} 爻（由下往上）生成：實線鎖定。`;
+                statusMsg.textContent = `第 ${step} 爻（初爻起算）生成：實線鎖定。`;
             }
 
             if (step < maxStep) {
                 tossBtn.textContent = `擲爻 (${step + 1}/6)`;
             } else {
                 tossBtn.textContent = `完成`;
-                statusMsg.textContent = "六爻結構由下往上建構完成。";
+                statusMsg.textContent = "六爻結構由下往上（初爻至上爻）建構完成。";
             }
         }
 
@@ -403,7 +418,7 @@
                 statusMsg.textContent = `請先完成六次擲爻，目前進度 (${step}/6)`;
                 return;
             }
-            statusMsg.textContent = `成功將 [ ${gua}卦 ] 填入核心區域！`;
+            statusMsg.textContent = `成功將 [ ${gua}卦 ] 鎖入核心區域！`;
         });
     </script>
 </body>
