@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cyber I-Ching 賽博易經占卜儀 v6.1 完美版</title>
+    <title>Cyber I-Ching 賽博易經占卜儀 v6.2 完美版</title>
     <style>
         :root {
             --bg-color: #050507;
@@ -57,14 +57,14 @@
 
         .stage-container {
             position: relative;
-            width: 480px;
-            height: 480px;
+            width: 560px;
+            height: 560px;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
-        /* 外圍八卦梯形環繞區塊 */
+        /* 外圍八卦梯形環繞區塊：放大寬度約 4 倍（寬度改為 168px），並調整環繞半徑貼近太極 */
         .trapezoid-ring {
             position: absolute;
             width: 100%;
@@ -76,13 +76,12 @@
             position: absolute;
             top: 50%;
             left: 50%;
-            width: 42px;
-            height: 55px;
+            width: 168px; /* 寬度放大 4 倍 */
+            height: 50px;
             background: var(--panel-bg);
             border: 1px solid rgba(255, 51, 51, 0.4);
-            /* 修正長短邊比例：上寬下窄（或依環繞感調整） */
-            clip-path: polygon(0% 0%, 100% 0%, 75% 100%, 25% 100%);
-            transform-origin: 50% 135px; /* 緊密環繞中央太極的半徑 */
+            clip-path: polygon(15% 0%, 85% 0%, 100% 100%, 0% 100%);
+            transform-origin: 50% 115px; /* 調整旋轉中心與半徑，緊密環繞中央太極外圍 */
             pointer-events: auto;
             cursor: pointer;
             display: flex;
@@ -99,38 +98,36 @@
 
         .trap-content {
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 2px;
-            font-size: 0.6rem;
+            gap: 8px;
+            font-size: 0.75rem;
             color: var(--neon-red);
-            transform: scale(0.9);
         }
 
-        /* 讓每個方塊內的文字與符號隨著旋轉角度轉回來，保持易讀 */
-        .trap-1 { transform: translate(-50%, -50%) rotate(0deg) translateY(-135px); }
+        /* 八個方塊精準定位與角度：半徑設為 115px，完美環繞直徑 120px 的太極周圍 */
+        .trap-1 { transform: translate(-50%, -50%) rotate(0deg) translateY(-115px); }
         .trap-1 .trap-content { transform: rotate(0deg); }
 
-        .trap-2 { transform: translate(-50%, -50%) rotate(45deg) translateY(-135px); }
+        .trap-2 { transform: translate(-50%, -50%) rotate(45deg) translateY(-115px); }
         .trap-2 .trap-content { transform: rotate(-45deg); }
 
-        .trap-3 { transform: translate(-50%, -50%) rotate(90deg) translateY(-135px); }
+        .trap-3 { transform: translate(-50%, -50%) rotate(90deg) translateY(-115px); }
         .trap-3 .trap-content { transform: rotate(-90deg); }
 
-        .trap-4 { transform: translate(-50%, -50%) rotate(135deg) translateY(-135px); }
+        .trap-4 { transform: translate(-50%, -50%) rotate(135deg) translateY(-115px); }
         .trap-4 .trap-content { transform: rotate(-135deg); }
 
-        .trap-5 { transform: translate(-50%, -50%) rotate(180deg) translateY(-135px); }
+        .trap-5 { transform: translate(-50%, -50%) rotate(180deg) translateY(-115px); }
         .trap-5 .trap-content { transform: rotate(-180deg); }
 
-        .trap-6 { transform: translate(-50%, -50%) rotate(225deg) translateY(-135px); }
+        .trap-6 { transform: translate(-50%, -50%) rotate(225deg) translateY(-115px); }
         .trap-6 .trap-content { transform: rotate(-225deg); }
 
-        .trap-7 { transform: translate(-50%, -50%) rotate(270deg) translateY(-135px); }
+        .trap-7 { transform: translate(-50%, -50%) rotate(270deg) translateY(-115px); }
         .trap-7 .trap-content { transform: rotate(-270deg); }
 
-        .trap-8 { transform: translate(-50%, -50%) rotate(315deg) translateY(-135px); }
+        .trap-8 { transform: translate(-50%, -50%) rotate(315deg) translateY(-115px); }
         .trap-8 .trap-content { transform: rotate(-315deg); }
 
 
@@ -281,12 +278,12 @@
 <body>
 
     <header>
-        <h1>Cyber I-Ching v6.1</h1>
-        <p>外圍八卦梯形常駐（含卦名與符號） ＋ 中間太極展開後消失 ＋ 由下往上爻序</p>
+        <h1>Cyber I-Ching v6.2</h1>
+        <p>外圍八卦梯形寬度放大 4 倍 ＋ 緊密環繞中央太極 ＋ 由下往上爻序</p>
     </header>
 
     <div class="stage-container">
-        <!-- 外圍八卦梯形環繞區塊（具備卦名與符號） -->
+        <!-- 外圍八卦梯形環繞區塊：已放大寬度並修正環繞半徑 -->
         <div class="trapezoid-ring">
             <div class="trap-block trap-1"><div class="trap-content"><span>☰</span><span>乾</span></div></div>
             <div class="trap-block trap-2"><div class="trap-content"><span>☱</span><span>兌</span></div></div>
