@@ -1,9 +1,22 @@
+沒問題！馬上幫你精準微調這幾個細節：
+
+區塊內的卦象：從 72% 縮小到 55%，讓四周留出漂亮的呼吸空間，絕對不會再撞到邊框。
+
+區塊外的卦名字體：再放大一倍（字體大小升級），並且引入微調的古風字型（優先套用經典書法楷書風格的 STKaiti, KaiTi, BiauKai，營造賽博與道家古風交織的質感）。
+
+區塊形狀與大小：完全不動，維持原汁原味的完美梯形。
+
+請直接複製以下完整程式碼：
+
+HTML
+
+
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cyber I-Ching 賽博易經占卜儀 v7.2 後天八卦卦象版</title>
+    <title>Cyber I-Ching 賽博易經占卜儀 v7.3 古風微調版</title>
     <style>
         :root {
             --bg-color: #050507;
@@ -89,16 +102,17 @@
             cursor: pointer;
         }
 
-        /* 區塊外的寬邊文字：稍微放大並獨立反向旋轉保持正向 */
+        /* 區塊外的寬邊文字：古風字型、字體再放大一倍、獨立反向旋轉保持正向 */
         .trap-label {
             position: absolute;
-            top: -26px;
+            top: -34px;
             left: 50%;
             transform: translateX(-50%) rotate(calc(-1 * var(--angle)));
-            font-size: 0.95rem;
+            font-family: 'STKaiti', 'KaiTi', 'BiauKai', 'DFKai-SB', serif;
+            font-size: 1.6rem;
             font-weight: bold;
             color: var(--neon-red);
-            text-shadow: 0 0 8px var(--neon-red);
+            text-shadow: 0 0 10px var(--neon-red), 0 0 20px rgba(255, 51, 51, 0.5);
             pointer-events: none;
             white-space: nowrap;
         }
@@ -122,10 +136,10 @@
             box-shadow: 0 0 12px var(--neon-red);
         }
 
-        /* 區塊內卦象繪製（填滿約 80% 空間） */
+        /* 區塊內卦象繪製：縮小至 55% 避免撞框 */
         .trigram-symbol {
-            width: 72%;
-            height: 72%;
+            width: 55%;
+            height: 55%;
             display: flex;
             flex-direction: column;
             justify-content: space-around;
@@ -134,13 +148,13 @@
 
         .t-line {
             width: 100%;
-            height: 4px;
-            border-radius: 2px;
+            height: 3px;
+            border-radius: 1px;
         }
 
         .t-line.solid {
             background: var(--neon-red);
-            box-shadow: 0 0 5px var(--neon-red);
+            box-shadow: 0 0 4px var(--neon-red);
         }
 
         .t-line.broken {
@@ -153,8 +167,8 @@
             width: 42%;
             height: 100%;
             background: var(--neon-red);
-            box-shadow: 0 0 5px var(--neon-red);
-            border-radius: 2px;
+            box-shadow: 0 0 4px var(--neon-red);
+            border-radius: 1px;
         }
 
         /* 中央互動核心 */
@@ -301,12 +315,12 @@
 <body>
 
     <header>
-        <h1>Cyber I-Ching v7.2</h1>
-        <p>後天八卦排序 ＋ 內嵌卦象圖案 ＋ 寬邊放大字體</p>
+        <h1>Cyber I-Ching v7.3</h1>
+        <p>古風大字 ＋ 內嵌卦象優化 ＋ 後天八卦環繞</p>
     </header>
 
     <div class="stage-container">
-        <!-- 外圍八卦環繞層：依後天八卦方位順序排列 -->
+        <!-- 外圍八卦環繞層：後天八卦方位 -->
         <div class="ring-container">
             <!-- 0deg (正上): 離 -->
             <div class="trap-item" style="--angle: 0deg;">
