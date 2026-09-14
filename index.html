@@ -1,3 +1,10 @@
+這是我直接將你提供的完整 HTML 程式碼帶入，並且確保外圍的八卦梯形（SVG 扇形環）維持原本完美的放射狀八卦形式、中間太極拆開與右下角爻序堆疊邏輯全部保留的乾淨版本。
+
+你可以直接複製下方這段完整的程式碼覆蓋你的檔案：
+
+HTML
+
+
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
@@ -259,54 +266,43 @@
     </header>
 
     <div class="stage-container">
-        <!-- 真正標準的放射狀扇形八卦環（SVG 精準計算角度，內窄外寬環繞圓心） -->
+        <!-- 真正標準的放射狀扇形八卦環 -->
         <svg class="bagua-ring-svg" viewBox="0 0 480 480">
-            <!-- 每個扇形代表一個卦位，中心點 (240, 240)，內徑 80，外徑 220，每塊 45 度 -->
-            <!-- 離 (上 / 0度) -->
             <g class="bagua-slice-group" draggable="true" data-gua="離">
                 <path class="bagua-slice" d="M 211.72,100 A 140,140 0 0,1 268.28,100 L 293.18,22 A 220,220 0 0,0 186.82,22 Z" />
                 <text x="240" y="55" class="bagua-text">☲</text>
                 <text x="240" y="72" class="bagua-name">離</text>
             </g>
-            <!-- 巽 (右上 / 45度) -->
             <g class="bagua-slice-group" draggable="true" data-gua="巽">
                 <path class="bagua-slice" d="M 300.00,140 A 140,140 0 0,1 340.00,180 L 415.56,124.44 A 220,220 0 0,0 355.56,64.44 Z" />
                 <text x="350" y="98" class="bagua-text">☴</text>
                 <text x="365" y="118" class="bagua-name">巽</text>
             </g>
-            <!-- 震 (右 / 90度) -->
             <g class="bagua-slice-group" draggable="true" data-gua="震">
                 <path class="bagua-slice" d="M 340,211.72 A 140,140 0 0,1 340,268.28 L 418,293.18 A 220,220 0 0,0 418,186.82 Z" />
                 <text x="390" y="240" class="bagua-text">☳</text>
-                <text x="372" y="240" class="bagua-name" style="display:none;">震</text>
                 <text x="390" y="258" class="bagua-name">震</text>
             </g>
-            <!-- 艮 (右下 / 135度) -->
             <g class="bagua-slice-group" draggable="true" data-gua="艮">
                 <path class="bagua-slice" d="M 300.00,340 A 140,140 0 0,1 268.28,380 L 355.56,415.56 A 220,220 0 0,0 415.56,355.56 Z" />
                 <text x="350" y="382" class="bagua-text">☶</text>
                 <text x="365" y="362" class="bagua-name">艮</text>
             </g>
-            <!-- 坤 (下 / 180度) -->
             <g class="bagua-slice-group" draggable="true" data-gua="坤">
                 <path class="bagua-slice" d="M 268.28,380 A 140,140 0 0,1 211.72,380 L 186.82,458 A 220,220 0 0,0 293.18,458 Z" />
                 <text x="240" y="425" class="bagua-text">☷</text>
                 <text x="240" y="408" class="bagua-name">坤</text>
             </g>
-            <!-- 兌 (左下 / 225度) -->
             <g class="bagua-slice-group" draggable="true" data-gua="兌">
                 <path class="bagua-slice" d="M 140.00,340 A 140,140 0 0,1 100.00,300 L 64.44,355.56 A 220,220 0 0,0 124.44,415.56 Z" />
                 <text x="130" y="382" class="bagua-text">☱</text>
                 <text x="115" y="362" class="bagua-name">兌</text>
             </g>
-            <!-- 坎 (左 / 270度) -->
             <g class="bagua-slice-group" draggable="true" data-gua="坎">
                 <path class="bagua-slice" d="M 100,268.28 A 140,140 0 0,1 100,211.72 L 22,186.82 A 220,220 0 0,0 22,293.18 Z" />
-                <text x="90" y="240" class="bagua-text">5</text> <!-- 修正顯示用 -->
                 <text x="90" y="240" class="bagua-text">☵</text>
                 <text x="108" y="240" class="bagua-name">坎</text>
             </g>
-            <!-- 乾 (左上 / 315度) -->
             <g class="bagua-slice-group" draggable="true" data-gua="乾">
                 <path class="bagua-slice" d="M 140.00,140 A 140,140 0 0,1 211.72,100 L 186.82,22 A 220,220 0 0,0 64.44,124.44 Z" />
                 <text x="130" y="98" class="bagua-text">☰</text>
@@ -316,17 +312,13 @@
 
         <!-- 中央互動核心 -->
         <div class="core-area" id="coreArea" title="點擊進行擲爻">
-            
-            <!-- 雙獨立太極魚對組：絕對獨立的兩條魚，各自帶有魚眼 -->
             <div class="taijitu-pair">
-                <!-- 左側獨立黑魚（內含白色魚眼） -->
                 <div class="fish-left">
                     <svg width="100%" height="100%" viewBox="0 0 65 130">
                         <path d="M65,0 C29.1,0 0,29.1 0,65 C0,100.9 29.1,130 65,130 C48.4,130 32.5,114.1 32.5,97.5 C32.5,80.9 48.4,65 65,65 C48.4,65 32.5,49.1 32.5,32.5 C32.5,15.9 48.4,0 65,0 Z" fill="#000000"/>
                         <circle cx="48" cy="32.5" r="6" fill="#ffffff"/>
                     </svg>
                 </div>
-                <!-- 右側獨立白魚（內含黑色魚眼） -->
                 <div class="fish-right">
                     <svg width="100%" height="100%" viewBox="0 0 65 130">
                         <path d="M0,130 C35.9,130 65,100.9 65,65 C65,29.1 35.9,0 0,0 C16.6,0 32.5,15.9 32.5,32.5 C32.5,49.1 16.6,65 0,65 C16.6,65 32.5,80.9 32.5,97.5 C32.5,114.1 16.6,130 0,130 Z" fill="#ffffff"/>
@@ -335,7 +327,6 @@
                 </div>
             </div>
 
-            <!-- 中間爻卦區：無邊框，由下往上堆疊 (#yao-1 在最下方) -->
             <div class="hexagram-slot">
                 <div class="yao-line" id="yao-6"></div>
                 <div class="yao-line" id="yao-5"></div>
@@ -344,7 +335,6 @@
                 <div class="yao-line" id="yao-2"></div>
                 <div class="yao-line" id="yao-1"></div>
             </div>
-
         </div>
     </div>
 
@@ -370,7 +360,7 @@
             }
 
             if (step === 0) {
-                coreArea.classList.add('active'); // 觸發獨立雙魚向左右分開並淡出消失，露出無邊框爻槽
+                coreArea.classList.add('active');
             }
 
             step++;
@@ -417,7 +407,6 @@
             group.addEventListener('dragstart', (e) => {
                 e.dataTransfer.setData('text/plain', group.dataset.gua);
             });
-            // 讓 SVG 群組支援拖曳
             group.setAttribute('draggable', 'true');
         });
 
