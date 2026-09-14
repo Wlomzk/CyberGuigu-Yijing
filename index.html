@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cyber I-Ching 賽博易經占卜儀 v6.4 完美版</title>
+    <title>Cyber I-Ching 賽博易經占卜儀 v7.0 終極重構版</title>
     <style>
         :root {
             --bg-color: #050507;
@@ -55,36 +55,47 @@
             margin-top: 3px;
         }
 
+        /* 舞台主容器：固定大小，確保所有絕對定位精準對齊正中心 */
         .stage-container {
             position: relative;
-            width: 460px;
-            height: 460px;
+            width: 500px;
+            height: 500px;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
-        /* 外圍八卦梯形環繞區塊：寬度 2 倍 (84px)，內窄外寬，緊密對齊太極外圍 */
-        .trapezoid-ring {
+        /* 外圍八卦環繞層 */
+        .ring-container {
             position: absolute;
             width: 100%;
             height: 100%;
+            top: 0;
+            left: 0;
             pointer-events: none;
         }
 
-        .trap-block {
+        /* 單個八卦方位包裝器：利用 CSS 變數精準定位環繞角度與半徑 */
+        .trap-item {
             position: absolute;
             top: 50%;
             left: 50%;
-            width: 84px; /* 寬度 2 倍 */
-            height: 45px;
-            background: var(--panel-bg);
-            border: 1px solid rgba(255, 51, 51, 0.4);
-            /* 修正：上窄下寬（內窄外寬），完美呈現環狀排列 */
-            clip-path: polygon(15% 0%, 85% 0%, 100% 100%, 0% 100%);
-            transform-origin: 50% 85px; /* 對齊太極外緣半徑 */
+            width: 88px;  /* 寬度 2 倍設定 */
+            height: 50px;
+            margin-left: -44px; /* 置中修正 */
+            margin-top: -25px;
+            transform: rotate(var(--angle)) translateY(-130px); /* 130px 完美貼合太極外緣 */
             pointer-events: auto;
             cursor: pointer;
+        }
+
+        .trap-block {
+            width: 100%;
+            height: 100%;
+            background: var(--panel-bg);
+            border: 1px solid rgba(255, 51, 51, 0.4);
+            /* 內窄外寬的標準梯形配置 */
+            clip-path: polygon(20% 0%, 80% 0%, 100% 100%, 0% 100%);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -94,42 +105,19 @@
         .trap-block:hover {
             border-color: var(--neon-red);
             background: rgba(255, 51, 51, 0.15);
-            box-shadow: 0 0 10px var(--neon-red);
+            box-shadow: 0 0 12px var(--neon-red);
         }
 
+        /* 文字反向旋轉，確保永遠是正的易讀方向 */
         .trap-content {
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 6px;
-            font-size: 0.7rem;
+            font-size: 0.75rem;
             color: var(--neon-red);
+            transform: rotate(calc(-1 * var(--angle)));
         }
-
-        /* 8個方向精準環繞半徑 (-85px 貼合直徑 120px 的太極外圍) */
-        .trap-1 { transform: translate(-50%, -50%) rotate(0deg) translateY(-85px); }
-        .trap-1 .trap-content { transform: rotate(0deg); }
-
-        .trap-2 { transform: translate(-50%, -50%) rotate(45deg) translateY(-85px); }
-        .trap-2 .trap-content { transform: rotate(-45deg); }
-
-        .trap-3 { transform: translate(-50%, -50%) rotate(90deg) translateY(-85px); }
-        .trap-3 .trap-content { transform: rotate(-90deg); }
-
-        .trap-4 { transform: translate(-50%, -50%) rotate(135deg) translateY(-85px); }
-        .trap-4 .trap-content { transform: rotate(-135deg); }
-
-        .trap-5 { transform: translate(-50%, -50%) rotate(180deg) translateY(-85px); }
-        .trap-5 .trap-content { transform: rotate(-180deg); }
-
-        .trap-6 { transform: translate(-50%, -50%) rotate(225deg) translateY(-85px); }
-        .trap-6 .trap-content { transform: rotate(-225deg); }
-
-        .trap-7 { transform: translate(-50%, -50%) rotate(270deg) translateY(-85px); }
-        .trap-7 .trap-content { transform: rotate(-270deg); }
-
-        .trap-8 { transform: translate(-50%, -50%) rotate(315deg) translateY(-85px); }
-        .trap-8 .trap-content { transform: rotate(-315deg); }
 
 
         /* 中央互動核心 */
@@ -165,22 +153,22 @@
         .fish-left { left: 0; }
         .fish-right { right: 0; }
 
-        /* 點擊後：中央太極展開並消失 */
+        /* 點擊後：中央太極向兩側展開並淡出 */
         .core-area.active .taijitu-pair {
             opacity: 0;
-            transform: scale(1.5);
+            transform: scale(1.4);
             pointer-events: none;
         }
 
         .core-area.active .fish-left {
-            transform: translateX(-60px);
+            transform: translateX(-50px);
         }
 
         .core-area.active .fish-right {
-            transform: translateX(60px);
+            transform: translateX(50px);
         }
 
-        /* 中間爻卦區：由下往上堆疊 */
+        /* 中間爻卦區：由下往上堆疊 (1到6) */
         .hexagram-slot {
             position: absolute;
             display: flex;
@@ -279,21 +267,21 @@
 <body>
 
     <header>
-        <h1>Cyber I-Ching v6.4</h1>
-        <p>外圍八卦梯形寬度 2 倍 ＋ 正確內窄外寬 ＋ 緊密環繞太極</p>
+        <h1>Cyber I-Ching v7.0</h1>
+        <p>終極重構：精準環繞八卦 ＋ 雙倍寬度梯形 ＋ 由下往上爻序</p>
     </header>
 
     <div class="stage-container">
-        <!-- 外圍八卦梯形環繞區塊 -->
-        <div class="trapezoid-ring">
-            <div class="trap-block trap-1"><div class="trap-content"><span>☰</span><span>乾</span></div></div>
-            <div class="trap-block trap-2"><div class="trap-content"><span>☱</span><span>兌</span></div></div>
-            <div class="trap-block trap-3"><div class="trap-content"><span>☲</span><span>離</span></div></div>
-            <div class="trap-block trap-4"><div class="trap-content"><span>☳</span><span>震</span></div></div>
-            <div class="trap-block trap-5"><div class="trap-content"><span>☴</span><span>巽</span></div></div>
-            <div class="trap-block trap-6"><div class="trap-content"><span>☵</span><span>坎</span></div></div>
-            <div class="trap-block trap-7"><div class="trap-content"><span>☶</span><span>艮</span></div></div>
-            <div class="trap-block trap-8"><div class="trap-content"><span>☷</span><span>坤</span></div></div>
+        <!-- 外圍八卦環繞區塊：使用角度變數精準定位 -->
+        <div class="ring-container">
+            <div class="trap-item" style="--angle: 0deg;"><div class="trap-block"><div class="trap-content"><span>☰</span><span>乾</span></div></div></div>
+            <div class="trap-item" style="--angle: 45deg;"><div class="trap-block"><div class="trap-content"><span>☱</span><span>兌</span></div></div></div>
+            <div class="trap-item" style="--angle: 90deg;"><div class="trap-block"><div class="trap-content"><span>☲</span><span>離</span></div></div></div>
+            <div class="trap-item" style="--angle: 135deg;"><div class="trap-block"><div class="trap-content"><span>☳</span><span>震</span></div></div></div>
+            <div class="trap-item" style="--angle: 180deg;"><div class="trap-block"><div class="trap-content"><span>☴</span><span>巽</span></div></div></div>
+            <div class="trap-item" style="--angle: 225deg;"><div class="trap-block"><div class="trap-content"><span>☵</span><span>坎</span></div></div></div>
+            <div class="trap-item" style="--angle: 270deg;"><div class="trap-block"><div class="trap-content"><span>☶</span><span>艮</span></div></div></div>
+            <div class="trap-item" style="--angle: 315deg;"><div class="trap-block"><div class="trap-content"><span>☷</span><span>坤</span></div></div></div>
         </div>
 
         <!-- 中央互動核心 -->
