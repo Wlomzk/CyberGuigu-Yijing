@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cyber I-Ching 賽博易經占卜儀 v3.0</title>
+    <title>Cyber I-Ching 賽博易經占卜儀 v4.0</title>
     <style>
         :root {
             --bg-color: #050507;
@@ -75,42 +75,51 @@
             z-index: 10;
         }
 
-        /* 完整傳統太極：點擊後徹底消失淡出 */
-        .taiji-united {
+        /* 雙獨立太極魚容器：初始在中心交疊 */
+        .taijitu-pair {
             position: absolute;
             width: 140px;
             height: 140px;
-            border-radius: 50%;
-            overflow: hidden;
-            background: #fff;
-            transition: opacity 0.5s ease, transform 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.6s ease-in-out;
         }
 
-        .core-area.active .taiji-united {
-            opacity: 0;
-            transform: scale(0.5);
-            pointer-events: none;
-        }
-
-        /* 左右獨立區塊（無邊框、乾淨呈現） */
-        .taiji-split-left, .taiji-split-right {
+        /* 獨立黑魚（帶白眼）與獨立白魚（帶黑眼） */
+        .fish-black, .fish-white {
             position: absolute;
-            opacity: 0;
+            width: 70px;
+            height: 140px;
             transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .fish-black {
+            left: 35px;
+            transform-origin: right center;
+        }
+
+        .fish-white {
+            right: 35px;
+            transform-origin: left center;
+        }
+
+        /* 點擊後：雙魚左右分離並漸漸淡出消失 */
+        .core-area.active .taijitu-pair {
+            opacity: 0;
+            transform: scale(0.7);
             pointer-events: none;
         }
 
-        .core-area.active .taiji-split-left {
-            opacity: 1;
-            transform: translateX(-100px);
+        .core-area.active .fish-black {
+            transform: translateX(-60px);
         }
 
-        .core-area.active .taiji-split-right {
-            opacity: 1;
-            transform: translateX(100px);
+        .core-area.active .fish-white {
+            transform: translateX(60px);
         }
 
-        /* 中間爻卦區：無邊框，由下往上堆疊 */
+        /* 中間爻卦區：絕對乾淨、無邊框、由下往上堆疊 */
         .hexagram-slot {
             position: absolute;
             display: flex;
@@ -131,6 +140,7 @@
             pointer-events: auto;
         }
 
+        /* 確保 #yao-1 在最下方，#yao-6 在最上方 */
         #yao-6 { order: 1; }
         #yao-5 { order: 2; }
         #yao-4 { order: 3; }
@@ -175,14 +185,14 @@
             pointer-events: none;
         }
 
-        /* 梯形區塊：短邊朝內（朝太極方向）、長邊朝外，紅黑發光風格 */
+        /* 標準八卦扇形／等腰梯形外框：頂短邊向內朝心、底長邊向外、自然放射環繞 */
         .bagua-block {
             position: absolute;
-            width: 80px;
-            height: 50px;
+            width: 84px;
+            height: 52px;
             background: var(--panel-bg);
-            /* 上窄下寬改為：頂部短邊朝內，底部長邊朝外 */
-            clip-path: polygon(15% 0%, 85% 0%, 100% 100%, 0% 100%);
+            /* 標準等腰梯形：上短底長，頂部朝內對齊圓心 */
+            clip-path: polygon(20% 0%, 80% 0%, 100% 100%, 0% 100%);
             border: 1px solid rgba(255, 51, 51, 0.3);
             display: flex;
             flex-direction: column;
@@ -215,15 +225,15 @@
             margin-top: 2px;
         }
 
-        /* 8個方位座標 */
-        .pos-li   { top: 10px;  left: 200px; }
-        .pos-kun  { top: 75px;  left: 335px; }
-        .pos-dui  { top: 215px; left: 400px; }
-        .pos-qian { top: 355px; left: 335px; }
-        .pos-kan  { top: 420px; left: 200px; }
-        .pos-gen  { top: 355px; left: 65px;  }
-        .pos-zhen { top: 215px; left: 0px;   }
-        .pos-xun  { top: 75px;  left: 65px;  }
+        /* 標準八卦方位座標（精確環繞） */
+        .pos-li   { top: 12px;  left: 198px; }
+        .pos-kun  { top: 78px;  left: 332px; }
+        .pos-dui  { top: 214px; left: 398px; }
+        .pos-qian { top: 350px; left: 332px; }
+        .pos-kan  { top: 416px; left: 198px; }
+        .pos-gen  { top: 350px; left: 64px;  }
+        .pos-zhen { top: 214px; left: -2px;  }
+        .pos-xun  { top: 78px;  left: 64px;  }
 
         .control-panel {
             margin-top: 15px;
@@ -268,12 +278,12 @@
 <body>
 
     <header>
-        <h1>Cyber I-Ching v3.0</h1>
-        <p>太極分離與徹底消失 ＋ 無邊框簡約爻區 ＋ 頂部短邊朝內的紅黑梯形</p>
+        <h1>Cyber I-Ching v4.0</h1>
+        <p>雙獨立太極魚分離淡出 ＋ 標準扇形內縮八卦 ＋ 無邊框由下往上爻序</p>
     </header>
 
     <div class="stage-container">
-        <!-- 外環八卦（短邊朝內指向中心） -->
+        <!-- 標準八卦外環 -->
         <div class="bagua-ring">
             <div class="bagua-block pos-li" draggable="true" data-gua="離"><span class="symbol">☲</span><span class="name">離</span></div>
             <div class="bagua-block pos-kun" draggable="true" data-gua="坤"><span class="symbol">☷</span><span class="name">坤</span></div>
@@ -288,22 +298,22 @@
         <!-- 中央互動核心 -->
         <div class="core-area" id="coreArea" title="點擊進行擲爻">
             
-            <!-- 完整傳統太極 (未展開時顯示，點擊後淡出消失) -->
-            <div class="taiji-united">
-                <svg width="100%" height="100%" viewBox="0 0 100 100">
-                    <path d="M50,0 A50,50 0 0,1 50,100 A25,25 0 0,1 50,50 A25,25 0 0,0 50,0 Z" fill="#000000"/>
-                    <path d="M50,100 A50,50 0 0,1 50,0 A25,25 0 0,1 50,50 A25,25 0 0,0 50,100 Z" fill="#ffffff"/>
-                    <circle cx="50" cy="25" r="5" fill="#ffffff"/>
-                    <circle cx="50" cy="75" r="5" fill="#000000"/>
-                </svg>
-            </div>
-
-            <!-- 分離左半塊：獨立黑色魚塊（無外框） -->
-            <div class="taiji-split-left">
-                <svg width="50" height="100" viewBox="0 0 50 100">
-                    <path d="M50,0 A50,50 0 0,1 50,100 A25,25 0 0,1 50,50 A25,25 0 0,0 50,0 Z" fill="#000000"/>
-                    <circle cx="42" cy="25" r="5" fill="#ffffff"/>
-                </svg>
+            <!-- 雙獨立太極魚對組（傳統黑白配色，各自帶魚眼） -->
+            <div class="taijitu-pair">
+                <!-- 左側獨立黑魚（帶白眼） -->
+                <div class="fish-black">
+                    <svg width="100%" height="100%" viewBox="0 0 50 100">
+                        <path d="M50,0 A50,50 0 0,1 50,100 A25,25 0 0,1 50,50 A25,25 0 0,0 50,0 Z" fill="#000000"/>
+                        <circle cx="42" cy="25" r="5" fill="#ffffff"/>
+                    </svg>
+                </div>
+                <!-- 右側獨立白魚（帶黑眼） -->
+                <div class="fish-white">
+                    <svg width="100%" height="100%" viewBox="0 0 50 100">
+                        <path d="M0,100 A50,50 0 0,1 0,0 A25,25 0 0,1 0,50 A25,25 0 0,0 0,100 Z" fill="#ffffff"/>
+                        <circle cx="8" cy="75" r="5" fill="#000000"/>
+                    </svg>
+                </div>
             </div>
 
             <!-- 中間爻卦槽：無邊框，由下往上堆疊 (#yao-1 在最下方) -->
@@ -316,18 +326,10 @@
                 <div class="yao-line" id="yao-1"></div>
             </div>
 
-            <!-- 分離右半塊：獨立白色魚塊（無外框） -->
-            <div class="taiji-split-right">
-                <svg width="50" height="100" viewBox="0 0 50 100">
-                    <path d="M0,100 A50,50 0 0,1 0,0 A25,25 0 0,1 0,50 A25,25 0 0,0 0,100 Z" fill="#ffffff"/>
-                    <circle cx="8" cy="75" r="5" fill="#000000"/>
-                </svg>
-            </div>
-
         </div>
     </div>
 
-    <div class="status-msg" id="statusMsg">系統就緒：點擊中央太極核心開始由下往上擲初爻</div>
+    <div class="status-msg" id="statusMsg">系統就緒：點擊中央太極雙魚開始由下往上擲初爻</div>
 
     <div class="control-panel">
         <button class="cyber-btn" id="tossBtn">擲爻 (1/6)</button>
@@ -349,7 +351,7 @@
             }
 
             if (step === 0) {
-                coreArea.classList.add('active'); // 觸發太極徹底消失、魚塊分離與無框爻槽展開
+                coreArea.classList.add('active'); // 觸發雙太極魚左右分離與淡出消失，露出中間無邊框爻槽
             }
 
             step++;
@@ -385,7 +387,7 @@
             step = 0;
             coreArea.classList.remove('active');
             tossBtn.textContent = "擲爻 (1/6)";
-            statusMsg.textContent = "系統已重置，請重新點擊太極擲爻。";
+            statusMsg.textContent = "系統已重置，請重新點擊太極雙魚擲爻。";
             
             for (let i = 1; i <= maxStep; i++) {
                 document.getElementById(`yao-${i}`).className = "yao-line";
