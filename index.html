@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cyber I-Ching 賽博易經占卜儀 v4.0</title>
+    <title>Cyber I-Ching 賽博易經占卜儀 v5.0 正式修正版</title>
     <style>
         :root {
             --bg-color: #050507;
@@ -83,43 +83,36 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.6s ease-in-out;
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* 獨立黑魚（帶白眼）與獨立白魚（帶黑眼） */
-        .fish-black, .fish-white {
+        /* 獨立黑魚與白魚，各自帶有獨立的魚眼 */
+        .fish-left, .fish-right {
             position: absolute;
             width: 70px;
             height: 140px;
             transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .fish-black {
-            left: 35px;
-            transform-origin: right center;
-        }
+        .fish-left { left: 0; }
+        .fish-right { right: 0; }
 
-        .fish-white {
-            right: 35px;
-            transform-origin: left center;
-        }
-
-        /* 點擊後：雙魚左右分離並漸漸淡出消失 */
+        /* 點擊後：兩隻獨立太極魚分別向左右分開，並同時淡出消失 */
         .core-area.active .taijitu-pair {
             opacity: 0;
-            transform: scale(0.7);
+            transform: scale(0.6);
             pointer-events: none;
         }
 
-        .core-area.active .fish-black {
-            transform: translateX(-60px);
+        .core-area.active .fish-left {
+            transform: translateX(-50px);
         }
 
-        .core-area.active .fish-white {
-            transform: translateX(60px);
+        .core-area.active .fish-right {
+            transform: translateX(50px);
         }
 
-        /* 中間爻卦區：絕對乾淨、無邊框、由下往上堆疊 */
+        /* 中間爻卦區：絕對無邊框，由下往上堆疊 */
         .hexagram-slot {
             position: absolute;
             display: flex;
@@ -140,7 +133,7 @@
             pointer-events: auto;
         }
 
-        /* 確保 #yao-1 在最下方，#yao-6 在最上方 */
+        /* 嚴格規定：#yao-1 在最下方，#yao-6 在最上方 */
         #yao-6 { order: 1; }
         #yao-5 { order: 2; }
         #yao-4 { order: 3; }
@@ -185,13 +178,13 @@
             pointer-events: none;
         }
 
-        /* 標準八卦扇形／等腰梯形外框：頂短邊向內朝心、底長邊向外、自然放射環繞 */
+        /* 標準八卦扇形梯形：頂端短邊向內朝向太極中心、底端長邊朝外 */
         .bagua-block {
             position: absolute;
             width: 84px;
             height: 52px;
             background: var(--panel-bg);
-            /* 標準等腰梯形：上短底長，頂部朝內對齊圓心 */
+            /* 上窄下寬（頂短邊朝內指向心，底長邊朝外） */
             clip-path: polygon(20% 0%, 80% 0%, 100% 100%, 0% 100%);
             border: 1px solid rgba(255, 51, 51, 0.3);
             display: flex;
@@ -225,7 +218,7 @@
             margin-top: 2px;
         }
 
-        /* 標準八卦方位座標（精確環繞） */
+        /* 標準八卦方位座標環繞 */
         .pos-li   { top: 12px;  left: 198px; }
         .pos-kun  { top: 78px;  left: 332px; }
         .pos-dui  { top: 214px; left: 398px; }
@@ -278,12 +271,12 @@
 <body>
 
     <header>
-        <h1>Cyber I-Ching v4.0</h1>
-        <p>雙獨立太極魚分離淡出 ＋ 標準扇形內縮八卦 ＋ 無邊框由下往上爻序</p>
+        <h1>Cyber I-Ching v5.0</h1>
+        <p>雙獨立太極魚分離淡出 ＋ 標準上窄下寬八卦 ＋ 無邊框由下往上爻序</p>
     </header>
 
     <div class="stage-container">
-        <!-- 標準八卦外環 -->
+        <!-- 外環八卦 -->
         <div class="bagua-ring">
             <div class="bagua-block pos-li" draggable="true" data-gua="離"><span class="symbol">☲</span><span class="name">離</span></div>
             <div class="bagua-block pos-kun" draggable="true" data-gua="坤"><span class="symbol">☷</span><span class="name">坤</span></div>
@@ -298,20 +291,20 @@
         <!-- 中央互動核心 -->
         <div class="core-area" id="coreArea" title="點擊進行擲爻">
             
-            <!-- 雙獨立太極魚對組（傳統黑白配色，各自帶魚眼） -->
+            <!-- 雙獨立太極魚對組：絕對獨立的兩條魚，各自帶有魚眼 -->
             <div class="taijitu-pair">
-                <!-- 左側獨立黑魚（帶白眼） -->
-                <div class="fish-black">
-                    <svg width="100%" height="100%" viewBox="0 0 50 100">
-                        <path d="M50,0 A50,50 0 0,1 50,100 A25,25 0 0,1 50,50 A25,25 0 0,0 50,0 Z" fill="#000000"/>
-                        <circle cx="42" cy="25" r="5" fill="#ffffff"/>
+                <!-- 左側獨立黑魚（內含白色魚眼） -->
+                <div class="fish-left">
+                    <svg width="100%" height="100%" viewBox="0 0 70 140">
+                        <path d="M70,0 C31.34,0 0,31.34 0,70 C0,108.66 31.34,140 70,140 C52.33,140 35,122.67 35,105 C35,87.33 52.33,70 70,70 C52.33,70 35,52.67 35,35 C35,17.33 52.33,0 70,0 Z" fill="#000000"/>
+                        <circle cx="52" cy="35" r="7" fill="#ffffff"/>
                     </svg>
                 </div>
-                <!-- 右側獨立白魚（帶黑眼） -->
-                <div class="fish-white">
-                    <svg width="100%" height="100%" viewBox="0 0 50 100">
-                        <path d="M0,100 A50,50 0 0,1 0,0 A25,25 0 0,1 0,50 A25,25 0 0,0 0,100 Z" fill="#ffffff"/>
-                        <circle cx="8" cy="75" r="5" fill="#000000"/>
+                <!-- 右側獨立白魚（內含黑色魚眼） -->
+                <div class="fish-right">
+                    <svg width="100%" height="100%" viewBox="0 0 70 140">
+                        <path d="M0,140 C38.66,140 70,108.66 70,70 C70,31.34 38.66,0 0,0 C17.67,0 35,17.33 35,35 C35,52.67 17.67,70 0,70 C17.67,70 35,87.33 35,105 C35,122.67 17.67,140 0,140 Z" fill="#ffffff"/>
+                        <circle cx="18" cy="105" r="7" fill="#000000"/>
                     </svg>
                 </div>
             </div>
@@ -329,7 +322,7 @@
         </div>
     </div>
 
-    <div class="status-msg" id="statusMsg">系統就緒：點擊中央太極雙魚開始由下往上擲初爻</div>
+    <div class="status-msg" id="statusMsg">系統就緒：點擊中央獨立雙魚開始由下往上擲初爻</div>
 
     <div class="control-panel">
         <button class="cyber-btn" id="tossBtn">擲爻 (1/6)</button>
@@ -351,7 +344,7 @@
             }
 
             if (step === 0) {
-                coreArea.classList.add('active'); // 觸發雙太極魚左右分離與淡出消失，露出中間無邊框爻槽
+                coreArea.classList.add('active'); // 觸發獨立雙魚向左右分開並淡出消失，露出無邊框爻槽
             }
 
             step++;
