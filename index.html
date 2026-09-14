@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cyber I-Ching 賽博易經占卜儀 v0.5</title>
+    <title>Cyber I-Ching 賽博易經占卜儀 v0.6</title>
     <style>
         :root {
             --bg-color: #050508;
@@ -66,11 +66,11 @@
             margin: 40px 0;
         }
 
-        /* 中央太極與爻的互動區容器 */
+        /* 中央互動舞台 */
         .center-stage {
             position: absolute;
-            width: 140px;
-            height: 140px;
+            width: 150px;
+            height: 150px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -79,51 +79,53 @@
             transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* 點擊展開：左右徹底分離，中間騰出空間放爻卦 */
+        /* 展開時：左右徹底分開，中間騰出空間放由下往上的爻 */
         .center-stage.expanded {
-            width: 360px;
+            width: 380px;
             justify-content: space-between;
         }
 
         /* 未展開時的完整太極 */
         .taiji-whole {
-            width: 140px;
-            height: 140px;
+            width: 150px;
+            height: 150px;
             border-radius: 50%;
             overflow: hidden;
             border: 2px solid var(--neon-cyan);
             box-shadow: 0 0 20px rgba(0, 243, 255, 0.3);
-            background: #000;
+            background: #00f3ff;
         }
 
         .center-stage.expanded .taiji-whole {
             display: none;
         }
 
-        /* 左側獨立區塊：黑魚 + 上方小白點 */
+        /* 獨立左半邊區塊 (黑魚 + 上方小圓點) */
         .taiji-left-block {
             display: none;
-            width: 85px;
-            height: 140px;
+            width: 90px;
+            height: 150px;
             background: var(--glass-bg);
             border: 2px solid var(--neon-cyan);
             border-radius: 12px;
             box-shadow: 0 0 15px rgba(0, 243, 255, 0.3);
             align-items: center;
             justify-content: center;
+            overflow: hidden;
         }
 
-        /* 右側獨立區塊：白魚 + 下方小黑點 */
+        /* 獨立右半邊區塊 (白魚 + 下方小圓點) */
         .taiji-right-block {
             display: none;
-            width: 85px;
-            height: 140px;
+            width: 90px;
+            height: 150px;
             background: var(--glass-bg);
             border: 2px solid var(--neon-cyan);
             border-radius: 12px;
             box-shadow: 0 0 15px rgba(0, 243, 255, 0.3);
             align-items: center;
             justify-content: center;
+            overflow: hidden;
         }
 
         .center-stage.expanded .taiji-left-block,
@@ -131,13 +133,13 @@
             display: flex;
         }
 
-        /* 中間爻卦生成區：嚴格由下往上 (1在最底部，6在最頂部) */
+        /* 中間爻卦生成區：嚴格由下往上 (flex-direction: column-reverse) */
         .inner-hexagram {
             display: none;
             flex-direction: column-reverse; 
             gap: 6px;
-            width: 110px;
-            padding: 10px;
+            width: 120px;
+            padding: 12px;
             background: rgba(5, 10, 20, 0.95);
             border: 1px dashed rgba(0, 243, 255, 0.4);
             border-radius: 8px;
@@ -185,13 +187,12 @@
             pointer-events: none;
         }
 
-        /* 梯形區塊：維持正向、絕對不旋轉、朝太極內縮（寬底朝外、窄頂朝內） */
+        /* 梯形區塊：底部寬、頂部窄（向太極內縮），且文字符號絕對不旋轉保持正向 */
         .bagua-item {
             position: absolute;
             width: 80px;
             height: 50px;
             background: var(--glass-bg);
-            /* 梯形：上窄下寬，朝圓心內縮 */
             clip-path: polygon(15% 0%, 85% 0%, 100% 100%, 0% 100%);
             border: 1px solid var(--border-color);
             display: flex;
@@ -224,7 +225,7 @@
             margin-top: 2px;
         }
 
-        /* 各方位定位（不旋轉文字與符號，讓它們保持正向朝上） */
+        /* 各方位座標固定（不旋轉） */
         .pos-li   { top: 10px;  left: 190px; }
         .pos-kun  { top: 75px;  left: 320px; }
         .pos-dui  { top: 205px; left: 380px; }
@@ -278,12 +279,12 @@
 <body>
 
     <header>
-        <h1>Cyber I-Ching v0.5</h1>
-        <p>太極獨立左右分離 (不反色) + 由下往上爻卦堆疊 + 正向內縮梯形</p>
+        <h1>Cyber I-Ching v0.6</h1>
+        <p>太極獨立左右分離 (黑白陰陽正確) + 由下往上爻卦 + 正向內縮梯形</p>
     </header>
 
     <div class="main-container">
-        <!-- 外環八卦 (正向不旋轉、內縮梯形) -->
+        <!-- 外環八卦 (正向內縮梯形) -->
         <div class="bagua-ring">
             <div class="bagua-item pos-li" draggable="true" data-gua="離"><span class="symbol">☲</span><span class="name">離</span></div>
             <div class="bagua-item pos-kun" draggable="true" data-gua="坤"><span class="symbol">☷</span><span class="name">坤</span></div>
@@ -295,31 +296,28 @@
             <div class="bagua-item pos-xun" draggable="true" data-gua="巽"><span class="symbol">☴</span><span class="name">巽</span></div>
         </div>
 
-        <!-- 中央舞臺 (點擊後太極左右獨立分開) -->
+        <!-- 中央舞臺 -->
         <div class="center-stage" id="centerStage" title="點擊進行擲爻">
             
-            <!-- 未展開時的完整太極 -->
+            <!-- 未展開完整太極 -->
             <div class="taiji-whole">
                 <svg width="100%" height="100%" viewBox="0 0 100 100">
-                    <circle cx="50" cy="50" r="48" fill="none" stroke="#00f3ff" stroke-width="2"/>
-                    <!-- 左半黑魚含上方小白點 -->
-                    <path d="M50,2 A48,48 0 0,0 50,98 A24,24 0 0,0 50,50 A24,24 0 0,1 50,2 Z" fill="#050508"/>
-                    <circle cx="50" cy="26" r="5" fill="#00f3ff"/>
-                    <!-- 右半白魚含下方小黑點 -->
-                    <path d="M50,98 A48,48 0 0,0 50,2 A24,24 0 0,0 50,50 A24,24 0 0,1 50,98 Z" fill="#00f3ff"/>
-                    <circle cx="50" cy="74" r="5" fill="#050508"/>
+                    <path d="M50,0 A50,50 0 0,1 50,100 A25,25 0 0,1 50,50 A25,25 0 0,0 50,0 Z" fill="#050508"/>
+                    <path d="M50,100 A50,50 0 0,1 50,0 A25,25 0 0,1 50,50 A25,25 0 0,0 50,100 Z" fill="#00f3ff"/>
+                    <circle cx="50" cy="25" r="5" fill="#00f3ff"/>
+                    <circle cx="50" cy="75" r="5" fill="#050508"/>
                 </svg>
             </div>
 
-            <!-- 展開後的左側獨立區塊 (黑魚 + 上方小白點) -->
+            <!-- 展開後：獨立左半邊 (黑魚 + 上方小圓點) -->
             <div class="taiji-left-block">
-                <svg width="50" height="120" viewBox="0 0 50 100">
-                    <path d="M50,2 A48,48 0 0,0 50,98 A24,24 0 0,0 50,50 A24,24 0 0,1 50,2 Z" fill="#050508"/>
-                    <circle cx="42" cy="26" r="5" fill="#00f3ff"/>
+                <svg width="60" height="130" viewBox="0 0 50 100">
+                    <path d="M50,0 A50,50 0 0,1 50,100 A25,25 0 0,1 50,50 A25,25 0 0,0 50,0 Z" fill="#050508"/>
+                    <circle cx="42" cy="25" r="5" fill="#00f3ff"/>
                 </svg>
             </div>
 
-            <!-- 中間爻卦生成區：由下往上堆疊 (初爻在底部 yao-1，依序往上到 yao-6) -->
+            <!-- 中間爻卦區：由下往上 (yao-1 在最底) -->
             <div class="inner-hexagram" id="innerHexagram">
                 <div class="inner-yao" id="yao-6"></div>
                 <div class="inner-yao" id="yao-5"></div>
@@ -329,11 +327,11 @@
                 <div class="inner-yao" id="yao-1"></div>
             </div>
 
-            <!-- 展開後的右側獨立區塊 (白魚 + 下方小黑點) -->
+            <!-- 展開後：獨立右半邊 (白魚 + 下方小圓點) -->
             <div class="taiji-right-block">
-                <svg width="50" height="120" viewBox="0 0 50 100">
-                    <path d="M0,98 A48,48 0 0,0 0,2 A24,24 0 0,0 0,50 A24,24 0 0,1 0,98 Z" fill="#00f3ff"/>
-                    <circle cx="8" cy="74" r="5" fill="#050508"/>
+                <svg width="60" height="130" viewBox="0 0 50 100">
+                    <path d="M0,100 A50,50 0 0,1 0,0 A25,25 0 0,1 0,50 A25,25 0 0,0 0,100 Z" fill="#00f3ff"/>
+                    <circle cx="8" cy="75" r="5" fill="#050508"/>
                 </svg>
             </div>
 
@@ -361,13 +359,11 @@
                 return;
             }
 
-            // 第一次擲爻時，太極左右徹底獨立分開
             if (currentYaoStep === 0) {
                 centerStage.classList.add('expanded');
             }
 
             currentYaoStep++;
-            // 因為使用 flex-direction: column-reverse，yao-1 會自動呈現在最底部，接著往上堆疊
             const targetYao = document.getElementById(`yao-${currentYaoStep}`);
             
             const rand = Math.random();
@@ -408,7 +404,6 @@
             }
         });
 
-        // 拖曳互動
         const baguaItems = document.querySelectorAll('.bagua-item');
         baguaItems.forEach(item => {
             item.addEventListener('dragstart', (e) => {
