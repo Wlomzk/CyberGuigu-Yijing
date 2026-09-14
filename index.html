@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cyber I-Ching 賽博易經占卜儀 v6.3 完美版</title>
+    <title>Cyber I-Ching 賽博易經占卜儀 v6.4 完美版</title>
     <style>
         :root {
             --bg-color: #050507;
@@ -57,14 +57,14 @@
 
         .stage-container {
             position: relative;
-            width: 500px;
-            height: 500px;
+            width: 460px;
+            height: 460px;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
-        /* 外圍八卦梯形環繞區塊：寬度改為 3 倍 (126px)，內窄外寬，緊貼太極外圍 */
+        /* 外圍八卦梯形環繞區塊：寬度 2 倍 (84px)，內窄外寬，緊密對齊太極外圍 */
         .trapezoid-ring {
             position: absolute;
             width: 100%;
@@ -76,13 +76,13 @@
             position: absolute;
             top: 50%;
             left: 50%;
-            width: 126px; /* 寬度放大 3 倍 */
-            height: 48px;
+            width: 84px; /* 寬度 2 倍 */
+            height: 45px;
             background: var(--panel-bg);
             border: 1px solid rgba(255, 51, 51, 0.4);
-            /* 修正寬窄邊：上窄下寬（內窄外寬），拼起來呈現完美的放射環繞 */
-            clip-path: polygon(25% 0%, 75% 0%, 100% 100%, 0% 100%);
-            transform-origin: 50% 100px; /* 半徑對齊中央太極外緣 */
+            /* 修正：上窄下寬（內窄外寬），完美呈現環狀排列 */
+            clip-path: polygon(15% 0%, 85% 0%, 100% 100%, 0% 100%);
+            transform-origin: 50% 85px; /* 對齊太極外緣半徑 */
             pointer-events: auto;
             cursor: pointer;
             display: flex;
@@ -101,34 +101,34 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            font-size: 0.75rem;
+            gap: 6px;
+            font-size: 0.7rem;
             color: var(--neon-red);
         }
 
-        /* 8個方向精準環繞半徑 (-100px 貼合直徑 120px 的太極) */
-        .trap-1 { transform: translate(-50%, -50%) rotate(0deg) translateY(-100px); }
+        /* 8個方向精準環繞半徑 (-85px 貼合直徑 120px 的太極外圍) */
+        .trap-1 { transform: translate(-50%, -50%) rotate(0deg) translateY(-85px); }
         .trap-1 .trap-content { transform: rotate(0deg); }
 
-        .trap-2 { transform: translate(-50%, -50%) rotate(45deg) translateY(-100px); }
+        .trap-2 { transform: translate(-50%, -50%) rotate(45deg) translateY(-85px); }
         .trap-2 .trap-content { transform: rotate(-45deg); }
 
-        .trap-3 { transform: translate(-50%, -50%) rotate(90deg) translateY(-100px); }
+        .trap-3 { transform: translate(-50%, -50%) rotate(90deg) translateY(-85px); }
         .trap-3 .trap-content { transform: rotate(-90deg); }
 
-        .trap-4 { transform: translate(-50%, -50%) rotate(135deg) translateY(-100px); }
+        .trap-4 { transform: translate(-50%, -50%) rotate(135deg) translateY(-85px); }
         .trap-4 .trap-content { transform: rotate(-135deg); }
 
-        .trap-5 { transform: translate(-50%, -50%) rotate(180deg) translateY(-100px); }
+        .trap-5 { transform: translate(-50%, -50%) rotate(180deg) translateY(-85px); }
         .trap-5 .trap-content { transform: rotate(-180deg); }
 
-        .trap-6 { transform: translate(-50%, -50%) rotate(225deg) translateY(-100px); }
+        .trap-6 { transform: translate(-50%, -50%) rotate(225deg) translateY(-85px); }
         .trap-6 .trap-content { transform: rotate(-225deg); }
 
-        .trap-7 { transform: translate(-50%, -50%) rotate(270deg) translateY(-100px); }
+        .trap-7 { transform: translate(-50%, -50%) rotate(270deg) translateY(-85px); }
         .trap-7 .trap-content { transform: rotate(-270deg); }
 
-        .trap-8 { transform: translate(-50%, -50%) rotate(315deg) translateY(-100px); }
+        .trap-8 { transform: translate(-50%, -50%) rotate(315deg) translateY(-85px); }
         .trap-8 .trap-content { transform: rotate(-315deg); }
 
 
@@ -279,8 +279,8 @@
 <body>
 
     <header>
-        <h1>Cyber I-Ching v6.3</h1>
-        <p>外圍八卦梯形寬度 3 倍 ＋ 內窄外寬 ＋ 緊密環繞太極</p>
+        <h1>Cyber I-Ching v6.4</h1>
+        <p>外圍八卦梯形寬度 2 倍 ＋ 正確內窄外寬 ＋ 緊密環繞太極</p>
     </header>
 
     <div class="stage-container">
