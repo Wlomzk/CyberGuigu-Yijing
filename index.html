@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cyber I-Ching 賽博易經占卜儀 v7.3 古風微調版</title>
+    <title>Cyber I-Ching 賽博易經占卜儀 v7.3 模組化版</title>
+    <!-- 引入外部外圍八卦專用樣式模組 -->
+    <link rel="stylesheet" href="yijing.css">
     <style>
         :root {
             --bg-color: #050507;
@@ -53,109 +55,6 @@
             font-size: 0.6rem;
             color: #888;
             margin-top: 3px;
-        }
-
-        /* 舞台主容器：整體縮減為 85% */
-        .stage-container {
-            position: relative;
-            width: 500px;
-            height: 500px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transform: scale(0.85);
-        }
-
-        /* 外圍八卦環繞層 */
-        .ring-container {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
-            pointer-events: none;
-        }
-
-        .trap-item {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 88px;
-            height: 50px;
-            margin-left: -44px;
-            margin-top: -25px;
-            transform: rotate(var(--angle)) translateY(-130px);
-            pointer-events: auto;
-            cursor: pointer;
-        }
-
-        /* 區塊外的寬邊文字：古風字型、字體再放大一倍、獨立反向旋轉保持正向 */
-        .trap-label {
-            position: absolute;
-            top: -34px;
-            left: 50%;
-            transform: translateX(-50%) rotate(calc(-1 * var(--angle)));
-            font-family: 'STKaiti', 'KaiTi', 'BiauKai', 'DFKai-SB', serif;
-            font-size: 1.6rem;
-            font-weight: bold;
-            color: var(--neon-red);
-            text-shadow: 0 0 10px var(--neon-red), 0 0 20px rgba(255, 51, 51, 0.5);
-            pointer-events: none;
-            white-space: nowrap;
-        }
-
-        .trap-block {
-            width: 100%;
-            height: 100%;
-            background: var(--panel-bg);
-            border: 1px solid rgba(255, 51, 51, 0.4);
-            /* 外寬內窄梯形維持不變 */
-            clip-path: polygon(0% 0%, 100% 0%, 80% 100%, 20% 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-        }
-
-        .trap-block:hover {
-            border-color: var(--neon-red);
-            background: rgba(255, 51, 51, 0.15);
-            box-shadow: 0 0 12px var(--neon-red);
-        }
-
-        /* 區塊內卦象繪製：縮小至 55% 避免撞框 */
-        .trigram-symbol {
-            width: 55%;
-            height: 55%;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-around;
-            align-items: center;
-        }
-
-        .t-line {
-            width: 100%;
-            height: 3px;
-            border-radius: 1px;
-        }
-
-        .t-line.solid {
-            background: var(--neon-red);
-            box-shadow: 0 0 4px var(--neon-red);
-        }
-
-        .t-line.broken {
-            display: flex;
-            justify-content: space-between;
-            background: transparent;
-        }
-
-        .t-line.broken span {
-            width: 42%;
-            height: 100%;
-            background: var(--neon-red);
-            box-shadow: 0 0 4px var(--neon-red);
-            border-radius: 1px;
         }
 
         /* 中央互動核心 */
