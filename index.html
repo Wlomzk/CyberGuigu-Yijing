@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cyber I-Ching 賽博易經占卜儀 v6.0 正式完美版</title>
+    <title>Cyber I-Ching 賽博易經占卜儀 v6.1 完美版</title>
     <style>
         :root {
             --bg-color: #050507;
@@ -37,34 +37,34 @@
 
         header {
             position: absolute;
-            top: 25px;
+            top: 20px;
             text-align: center;
             letter-spacing: 3px;
             text-transform: uppercase;
         }
 
         header h1 {
-            font-size: 1.1rem;
+            font-size: 1rem;
             color: var(--neon-red);
             text-shadow: 0 0 10px rgba(255, 51, 51, 0.4);
         }
 
         header p {
-            font-size: 0.65rem;
+            font-size: 0.6rem;
             color: #888;
-            margin-top: 4px;
+            margin-top: 3px;
         }
 
         .stage-container {
             position: relative;
-            width: 520px;
-            height: 520px;
+            width: 480px;
+            height: 480px;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
-        /* 外圍正常的八卦梯形環繞（保持不動，不消失） */
+        /* 外圍八卦梯形環繞區塊 */
         .trapezoid-ring {
             position: absolute;
             width: 100%;
@@ -76,14 +76,19 @@
             position: absolute;
             top: 50%;
             left: 50%;
-            width: 24px;
-            height: 40px;
+            width: 42px;
+            height: 55px;
             background: var(--panel-bg);
-            border: 1px solid rgba(255, 51, 51, 0.5);
-            clip-path: polygon(20% 0%, 80% 0%, 100% 100%, 0% 100%);
-            transform-origin: 50% 180px;
+            border: 1px solid rgba(255, 51, 51, 0.4);
+            /* 修正長短邊比例：上寬下窄（或依環繞感調整） */
+            clip-path: polygon(0% 0%, 100% 0%, 75% 100%, 25% 100%);
+            transform-origin: 50% 135px; /* 緊密環繞中央太極的半徑 */
             pointer-events: auto;
             cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
         }
 
         .trap-block:hover {
@@ -92,20 +97,48 @@
             box-shadow: 0 0 10px var(--neon-red);
         }
 
-        .trap-1  { transform: translate(-50%, -50%) rotate(0deg) translateY(-180px); }
-        .trap-2  { transform: translate(-50%, -50%) rotate(45deg) translateY(-180px); }
-        .trap-3  { transform: translate(-50%, -50%) rotate(90deg) translateY(-180px); }
-        .trap-4  { transform: translate(-50%, -50%) rotate(135deg) translateY(-180px); }
-        .trap-5  { transform: translate(-50%, -50%) rotate(180deg) translateY(-180px); }
-        .trap-6  { transform: translate(-50%, -50%) rotate(225deg) translateY(-180px); }
-        .trap-7  { transform: translate(-50%, -50%) rotate(270deg) translateY(-180px); }
-        .trap-8  { transform: translate(-50%, -50%) rotate(315deg) translateY(-180px); }
+        .trap-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+            font-size: 0.6rem;
+            color: var(--neon-red);
+            transform: scale(0.9);
+        }
+
+        /* 讓每個方塊內的文字與符號隨著旋轉角度轉回來，保持易讀 */
+        .trap-1 { transform: translate(-50%, -50%) rotate(0deg) translateY(-135px); }
+        .trap-1 .trap-content { transform: rotate(0deg); }
+
+        .trap-2 { transform: translate(-50%, -50%) rotate(45deg) translateY(-135px); }
+        .trap-2 .trap-content { transform: rotate(-45deg); }
+
+        .trap-3 { transform: translate(-50%, -50%) rotate(90deg) translateY(-135px); }
+        .trap-3 .trap-content { transform: rotate(-90deg); }
+
+        .trap-4 { transform: translate(-50%, -50%) rotate(135deg) translateY(-135px); }
+        .trap-4 .trap-content { transform: rotate(-135deg); }
+
+        .trap-5 { transform: translate(-50%, -50%) rotate(180deg) translateY(-135px); }
+        .trap-5 .trap-content { transform: rotate(-180deg); }
+
+        .trap-6 { transform: translate(-50%, -50%) rotate(225deg) translateY(-135px); }
+        .trap-6 .trap-content { transform: rotate(-225deg); }
+
+        .trap-7 { transform: translate(-50%, -50%) rotate(270deg) translateY(-135px); }
+        .trap-7 .trap-content { transform: rotate(-270deg); }
+
+        .trap-8 { transform: translate(-50%, -50%) rotate(315deg) translateY(-135px); }
+        .trap-8 .trap-content { transform: rotate(-315deg); }
+
 
         /* 中央互動核心 */
         .core-area {
             position: absolute;
-            width: 150px;
-            height: 150px;
+            width: 140px;
+            height: 140px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -113,11 +146,11 @@
             z-index: 10;
         }
 
-        /* 雙獨立太極魚對組：對應手稿第一張圖的拆解 */
+        /* 雙獨立太極魚對組 */
         .taijitu-pair {
             position: absolute;
-            width: 130px;
-            height: 130px;
+            width: 120px;
+            height: 120px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -126,15 +159,15 @@
 
         .fish-left, .fish-right {
             position: absolute;
-            width: 65px;
-            height: 130px;
+            width: 60px;
+            height: 120px;
             transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .fish-left { left: 0; }
         .fish-right { right: 0; }
 
-        /* 點擊後：中央太極展開並消失（對應手稿「展開後消失」） */
+        /* 點擊後：中央太極展開並消失 */
         .core-area.active .taijitu-pair {
             opacity: 0;
             transform: scale(1.5);
@@ -142,11 +175,11 @@
         }
 
         .core-area.active .fish-left {
-            transform: translateX(-70px);
+            transform: translateX(-60px);
         }
 
         .core-area.active .fish-right {
-            transform: translateX(70px);
+            transform: translateX(60px);
         }
 
         /* 中間爻卦區：由下往上堆疊 */
@@ -155,9 +188,8 @@
             display: flex;
             flex-direction: column;
             gap: 6px;
-            width: 100px;
+            width: 90px;
             padding: 10px;
-            background: transparent;
             opacity: 0;
             transform: scale(0.9);
             transition: all 0.5s ease;
@@ -249,36 +281,36 @@
 <body>
 
     <header>
-        <h1>Cyber I-Ching v6.0</h1>
-        <p>外圍八卦梯形常駐 ＋ 中間太極展開後消失 ＋ 由下往上爻序</p>
+        <h1>Cyber I-Ching v6.1</h1>
+        <p>外圍八卦梯形常駐（含卦名與符號） ＋ 中間太極展開後消失 ＋ 由下往上爻序</p>
     </header>
 
     <div class="stage-container">
-        <!-- 外圍梯形環繞區塊（保持不動） -->
+        <!-- 外圍八卦梯形環繞區塊（具備卦名與符號） -->
         <div class="trapezoid-ring">
-            <div class="trap-block trap-1" title="乾"></div>
-            <div class="trap-block trap-2" title="兌"></div>
-            <div class="trap-block trap-3" title="離"></div>
-            <div class="trap-block trap-4" title="震"></div>
-            <div class="trap-block trap-5" title="巽"></div>
-            <div class="trap-block trap-6" title="坎"></div>
-            <div class="trap-block trap-7" title="艮"></div>
-            <div class="trap-block trap-8" title="坤"></div>
+            <div class="trap-block trap-1"><div class="trap-content"><span>☰</span><span>乾</span></div></div>
+            <div class="trap-block trap-2"><div class="trap-content"><span>☱</span><span>兌</span></div></div>
+            <div class="trap-block trap-3"><div class="trap-content"><span>☲</span><span>離</span></div></div>
+            <div class="trap-block trap-4"><div class="trap-content"><span>☳</span><span>震</span></div></div>
+            <div class="trap-block trap-5"><div class="trap-content"><span>☴</span><span>巽</span></div></div>
+            <div class="trap-block trap-6"><div class="trap-content"><span>☵</span><span>坎</span></div></div>
+            <div class="trap-block trap-7"><div class="trap-content"><span>☶</span><span>艮</span></div></div>
+            <div class="trap-block trap-8"><div class="trap-content"><span>☷</span><span>坤</span></div></div>
         </div>
 
         <!-- 中央互動核心 -->
         <div class="core-area" id="coreArea" title="點擊進行擲爻">
             <div class="taijitu-pair">
                 <div class="fish-left">
-                    <svg width="100%" height="100%" viewBox="0 0 65 130">
-                        <path d="M65,0 C29.1,0 0,29.1 0,65 C0,100.9 29.1,130 65,130 C48.4,130 32.5,114.1 32.5,97.5 C32.5,80.9 48.4,65 65,65 C48.4,65 32.5,49.1 32.5,32.5 C32.5,15.9 48.4,0 65,0 Z" fill="#000000"/>
-                        <circle cx="48" cy="32.5" r="6" fill="#ffffff"/>
+                    <svg width="100%" height="100%" viewBox="0 0 60 120">
+                        <path d="M60,0 C26.86,0 0,26.86 0,60 C0,93.14 26.86,120 60,120 C44.54,120 30,105.46 30,90 C30,74.54 44.54,60 60,60 C44.54,60 30,45.46 30,30 C30,14.54 44.54,0 60,0 Z" fill="#000000"/>
+                        <circle cx="44" cy="30" r="5" fill="#ffffff"/>
                     </svg>
                 </div>
                 <div class="fish-right">
-                    <svg width="100%" height="100%" viewBox="0 0 65 130">
-                        <path d="M0,130 C35.9,130 65,100.9 65,65 C65,29.1 35.9,0 0,0 C16.6,0 32.5,15.9 32.5,32.5 C32.5,49.1 16.6,65 0,65 C16.6,65 32.5,80.9 32.5,97.5 C32.5,114.1 16.6,130 0,130 Z" fill="#ffffff"/>
-                        <circle cx="17" cy="97.5" r="6" fill="#000000"/>
+                    <svg width="100%" height="100%" viewBox="0 0 60 120">
+                        <path d="M0,120 C33.14,120 60,93.14 60,60 C60,26.86 33.14,0 0,0 C15.46,0 30,14.54 30,30 C30,45.46 15.46,60 0,60 C15.46,60 30,74.54 30,90 C30,105.46 15.46,120 0,120 Z" fill="#ffffff"/>
+                        <circle cx="16" cy="90" r="5" fill="#000000"/>
                     </svg>
                 </div>
             </div>
@@ -316,7 +348,7 @@
             }
 
             if (step === 0) {
-                coreArea.classList.add('active'); // 僅觸發中央太極展開並消失，外圍梯形保持不動
+                coreArea.classList.add('active'); // 觸發中央太極展開並消失
             }
 
             step++;
