@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cyber I-Ching 賽博易經占卜儀 v0.6</title>
+    <title>Cyber I-Ching 賽博易經占卜儀 v1.0 (重構版)</title>
     <style>
         :root {
-            --bg-color: #050508;
+            --bg-color: #030305;
             --neon-cyan: #00f3ff;
             --neon-amber: #ffb700;
-            --glass-bg: rgba(10, 15, 30, 0.9);
-            --border-color: rgba(0, 243, 255, 0.4);
+            --panel-bg: rgba(8, 12, 24, 0.95);
+            --border-glow: rgba(0, 243, 255, 0.4);
         }
 
         * {
@@ -28,115 +28,100 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            overflow-x: hidden;
+            overflow: hidden;
             background-image: 
-                radial-gradient(circle at 50% 50%, rgba(0, 243, 255, 0.05) 0%, transparent 70%),
-                linear-gradient(rgba(0, 243, 255, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 243, 255, 0.03) 1px, transparent 1px);
-            background-size: 100% 100%, 30px 30px, 30px 30px;
+                radial-gradient(circle at 50% 50%, rgba(0, 243, 255, 0.04) 0%, transparent 70%),
+                linear-gradient(rgba(0, 243, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 243, 255, 0.02) 1px, transparent 1px);
+            background-size: 100% 100%, 40px 40px, 40px 40px;
         }
 
         header {
             position: absolute;
-            top: 20px;
+            top: 25px;
             text-align: center;
-            letter-spacing: 4px;
+            letter-spacing: 3px;
             text-transform: uppercase;
         }
 
         header h1 {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             color: var(--neon-cyan);
-            text-shadow: 0 0 10px rgba(0, 243, 255, 0.5);
+            text-shadow: 0 0 10px rgba(0, 243, 255, 0.4);
         }
 
         header p {
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             color: #6c757d;
             margin-top: 4px;
         }
 
-        .main-container {
+        /* 畫布外框 */
+        .stage-container {
             position: relative;
-            width: 500px;
-            height: 500px;
+            width: 520px;
+            height: 520px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 40px 0;
         }
 
-        /* 中央互動舞台 */
-        .center-stage {
+        /* 中央互動核心 (未展開時是圓形太極) */
+        .core-area {
             position: absolute;
-            width: 150px;
-            height: 150px;
+            width: 140px;
+            height: 140px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             z-index: 10;
-            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: width 0.5s ease;
         }
 
-        /* 展開時：左右徹底分開，中間騰出空間放由下往上的爻 */
-        .center-stage.expanded {
+        /* 展開後變寬，左右分離，中間留空放爻 */
+        .core-area.active {
             width: 380px;
             justify-content: space-between;
         }
 
-        /* 未展開時的完整太極 */
-        .taiji-whole {
-            width: 150px;
-            height: 150px;
+        /* 完整太極 */
+        .taiji-united {
+            width: 140px;
+            height: 140px;
             border-radius: 50%;
             overflow: hidden;
             border: 2px solid var(--neon-cyan);
             box-shadow: 0 0 20px rgba(0, 243, 255, 0.3);
-            background: #00f3ff;
+            background: #000;
         }
 
-        .center-stage.expanded .taiji-whole {
+        .core-area.active .taiji-united {
             display: none;
         }
 
-        /* 獨立左半邊區塊 (黑魚 + 上方小圓點) */
-        .taiji-left-block {
+        /* 左右獨立區塊 (預設隱藏，點擊後出現) */
+        .taiji-split-left, .taiji-split-right {
             display: none;
             width: 90px;
-            height: 150px;
-            background: var(--glass-bg);
+            height: 140px;
+            background: var(--panel-bg);
             border: 2px solid var(--neon-cyan);
             border-radius: 12px;
             box-shadow: 0 0 15px rgba(0, 243, 255, 0.3);
             align-items: center;
             justify-content: center;
-            overflow: hidden;
         }
 
-        /* 獨立右半邊區塊 (白魚 + 下方小圓點) */
-        .taiji-right-block {
-            display: none;
-            width: 90px;
-            height: 150px;
-            background: var(--glass-bg);
-            border: 2px solid var(--neon-cyan);
-            border-radius: 12px;
-            box-shadow: 0 0 15px rgba(0, 243, 255, 0.3);
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-        }
-
-        .center-stage.expanded .taiji-left-block,
-        .center-stage.expanded .taiji-right-block {
+        .core-area.active .taiji-split-left,
+        .core-area.active .taiji-split-right {
             display: flex;
         }
 
-        /* 中間爻卦生成區：嚴格由下往上 (flex-direction: column-reverse) */
-        .inner-hexagram {
+        /* 中間爻卦區：由下往上堆疊 (flex-direction: column-reverse) */
+        .hexagram-slot {
             display: none;
-            flex-direction: column-reverse; 
+            flex-direction: column-reverse;
             gap: 6px;
             width: 120px;
             padding: 12px;
@@ -145,11 +130,11 @@
             border-radius: 8px;
         }
 
-        .center-stage.expanded .inner-hexagram {
+        .core-area.active .hexagram-slot {
             display: flex;
         }
 
-        .inner-yao {
+        .yao-line {
             height: 6px;
             width: 100%;
             opacity: 0;
@@ -157,44 +142,44 @@
             transition: opacity 0.3s ease;
         }
 
-        .inner-yao.visible-dashed {
+        .yao-line.dashed {
             opacity: 1;
             border: 1px dashed rgba(0, 243, 255, 0.7);
             background: transparent;
         }
 
-        .inner-yao.visible-solid {
+        .yao-line.solid {
             opacity: 1;
             border: none;
             background: var(--neon-cyan);
             box-shadow: 0 0 6px var(--neon-cyan);
         }
 
-        .inner-yao.visible-flash {
+        .yao-line.flash {
             opacity: 1;
             border: 1px dashed var(--neon-amber);
             background: rgba(255, 183, 0, 0.3);
             box-shadow: 0 0 8px var(--neon-amber);
-            animation: flash 0.8s infinite alternate;
+            animation: flash-anim 0.8s infinite alternate;
         }
 
-        /* 外環八卦環 */
+        /* 外環八卦定位容器 */
         .bagua-ring {
             position: absolute;
-            width: 460px;
-            height: 460px;
+            width: 480px;
+            height: 480px;
             border-radius: 50%;
             pointer-events: none;
         }
 
-        /* 梯形區塊：底部寬、頂部窄（向太極內縮），且文字符號絕對不旋轉保持正向 */
-        .bagua-item {
+        /* 梯形區塊：正向、不旋轉、上窄下寬朝內縮 */
+        .bagua-block {
             position: absolute;
             width: 80px;
             height: 50px;
-            background: var(--glass-bg);
+            background: var(--panel-bg);
             clip-path: polygon(15% 0%, 85% 0%, 100% 100%, 0% 100%);
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--border-glow);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -205,49 +190,49 @@
             user-select: none;
         }
 
-        .bagua-item:hover {
+        .bagua-block:hover {
             border-color: var(--neon-cyan);
-            background: rgba(0, 243, 255, 0.2);
+            background: rgba(0, 243, 255, 0.15);
             box-shadow: 0 0 12px var(--neon-cyan);
             transform: scale(1.05);
         }
 
-        .bagua-item .symbol {
+        .bagua-block .symbol {
             font-size: 1rem;
             font-weight: bold;
             color: #fff;
             line-height: 1;
         }
 
-        .bagua-item .name {
+        .bagua-block .name {
             font-size: 0.55rem;
             color: var(--neon-cyan);
             margin-top: 2px;
         }
 
-        /* 各方位座標固定（不旋轉） */
-        .pos-li   { top: 10px;  left: 190px; }
-        .pos-kun  { top: 75px;  left: 320px; }
-        .pos-dui  { top: 205px; left: 380px; }
-        .pos-qian { top: 335px; left: 320px; }
-        .pos-kan  { top: 400px; left: 190px; }
-        .pos-gen  { top: 335px; left: 60px;  }
-        .pos-zhen { top: 205px; left: 0px;   }
-        .pos-xun  { top: 75px;  left: 60px;  }
+        /* 絕對直立不旋轉的 8 個方位座標 */
+        .pos-li   { top: 10px;  left: 200px; }
+        .pos-kun  { top: 75px;  left: 335px; }
+        .pos-dui  { top: 215px; left: 400px; }
+        .pos-qian { top: 355px; left: 335px; }
+        .pos-kan  { top: 420px; left: 200px; }
+        .pos-gen  { top: 355px; left: 65px;  }
+        .pos-zhen { top: 215px; left: 0px;   }
+        .pos-xun  { top: 75px;  left: 65px;  }
 
-        /* 控制台 */
+        /* 控制列 */
         .control-panel {
-            margin-top: 20px;
+            margin-top: 15px;
             display: flex;
-            gap: 12px;
+            gap: 15px;
         }
 
         .cyber-btn {
             background: transparent;
             border: 1px solid var(--neon-cyan);
             color: var(--neon-cyan);
-            padding: 8px 16px;
-            font-size: 0.75rem;
+            padding: 8px 18px;
+            font-size: 0.7rem;
             letter-spacing: 2px;
             cursor: pointer;
             text-transform: uppercase;
@@ -261,8 +246,8 @@
             box-shadow: 0 0 15px var(--neon-cyan);
         }
 
-        .status-bar {
-            margin-top: 12px;
+        .status-msg {
+            margin-top: 10px;
             font-size: 0.7rem;
             color: var(--neon-amber);
             letter-spacing: 1px;
@@ -270,7 +255,7 @@
             text-align: center;
         }
 
-        @keyframes flash {
+        @keyframes flash-anim {
             0% { opacity: 0.3; }
             100% { opacity: 1; }
         }
@@ -279,66 +264,66 @@
 <body>
 
     <header>
-        <h1>Cyber I-Ching v0.6</h1>
-        <p>太極獨立左右分離 (黑白陰陽正確) + 由下往上爻卦 + 正向內縮梯形</p>
+        <h1>Cyber I-Ching v1.0</h1>
+        <p>太極左右分離 + 由下往上爻卦 + 正向內縮梯形</p>
     </header>
 
-    <div class="main-container">
-        <!-- 外環八卦 (正向內縮梯形) -->
+    <div class="stage-container">
+        <!-- 外環八卦 (正向不旋轉、內縮梯形) -->
         <div class="bagua-ring">
-            <div class="bagua-item pos-li" draggable="true" data-gua="離"><span class="symbol">☲</span><span class="name">離</span></div>
-            <div class="bagua-item pos-kun" draggable="true" data-gua="坤"><span class="symbol">☷</span><span class="name">坤</span></div>
-            <div class="bagua-item pos-dui" draggable="true" data-gua="兌"><span class="symbol">☱</span><span class="name">兌</span></div>
-            <div class="bagua-item pos-qian" draggable="true" data-gua="乾"><span class="symbol">☰</span><span class="name">乾</span></div>
-            <div class="bagua-item pos-kan" draggable="true" data-gua="坎"><span class="symbol">☵</span><span class="name">坎</span></div>
-            <div class="bagua-item pos-gen" draggable="true" data-gua="艮"><span class="symbol">☶</span><span class="name">艮</span></div>
-            <div class="bagua-item pos-zhen" draggable="true" data-gua="震"><span class="symbol">☳</span><span class="name">震</span></div>
-            <div class="bagua-item pos-xun" draggable="true" data-gua="巽"><span class="symbol">☴</span><span class="name">巽</span></div>
+            <div class="bagua-block pos-li" draggable="true" data-gua="離"><span class="symbol">☲</span><span class="name">離</span></div>
+            <div class="bagua-block pos-kun" draggable="true" data-gua="坤"><span class="symbol">☷</span><span class="name">坤</span></div>
+            <div class="bagua-block pos-dui" draggable="true" data-gua="兌"><span class="symbol">☱</span><span class="name">兌</span></div>
+            <div class="bagua-block pos-qian" draggable="true" data-gua="乾"><span class="symbol">☰</span><span class="name">乾</span></div>
+            <div class="bagua-block pos-kan" draggable="true" data-gua="坎"><span class="symbol">☵</span><span class="name">坎</span></div>
+            <div class="bagua-block pos-gen" draggable="true" data-gua="艮"><span class="symbol">☶</span><span class="name">艮</span></div>
+            <div class="bagua-block pos-zhen" draggable="true" data-gua="震"><span class="symbol">☳</span><span class="name">震</span></div>
+            <div class="bagua-block pos-xun" draggable="true" data-gua="巽"><span class="symbol">☴</span><span class="name">巽</span></div>
         </div>
 
-        <!-- 中央舞臺 -->
-        <div class="center-stage" id="centerStage" title="點擊進行擲爻">
+        <!-- 中央互動核心 -->
+        <div class="core-area" id="coreArea" title="點擊進行擲爻">
             
             <!-- 未展開完整太極 -->
-            <div class="taiji-whole">
+            <div class="taiji-united">
                 <svg width="100%" height="100%" viewBox="0 0 100 100">
-                    <path d="M50,0 A50,50 0 0,1 50,100 A25,25 0 0,1 50,50 A25,25 0 0,0 50,0 Z" fill="#050508"/>
+                    <path d="M50,0 A50,50 0 0,1 50,100 A25,25 0 0,1 50,50 A25,25 0 0,0 50,0 Z" fill="#030305"/>
                     <path d="M50,100 A50,50 0 0,1 50,0 A25,25 0 0,1 50,50 A25,25 0 0,0 50,100 Z" fill="#00f3ff"/>
                     <circle cx="50" cy="25" r="5" fill="#00f3ff"/>
-                    <circle cx="50" cy="75" r="5" fill="#050508"/>
+                    <circle cx="50" cy="75" r="5" fill="#030305"/>
                 </svg>
             </div>
 
-            <!-- 展開後：獨立左半邊 (黑魚 + 上方小圓點) -->
-            <div class="taiji-left-block">
-                <svg width="60" height="130" viewBox="0 0 50 100">
-                    <path d="M50,0 A50,50 0 0,1 50,100 A25,25 0 0,1 50,50 A25,25 0 0,0 50,0 Z" fill="#050508"/>
+            <!-- 分離左半塊：黑魚 + 上方小圓點 -->
+            <div class="taiji-split-left">
+                <svg width="60" height="120" viewBox="0 0 50 100">
+                    <path d="M50,0 A50,50 0 0,1 50,100 A25,25 0 0,1 50,50 A25,25 0 0,0 50,0 Z" fill="#030305"/>
                     <circle cx="42" cy="25" r="5" fill="#00f3ff"/>
                 </svg>
             </div>
 
-            <!-- 中間爻卦區：由下往上 (yao-1 在最底) -->
-            <div class="inner-hexagram" id="innerHexagram">
-                <div class="inner-yao" id="yao-6"></div>
-                <div class="inner-yao" id="yao-5"></div>
-                <div class="inner-yao" id="yao-4"></div>
-                <div class="inner-yao" id="yao-3"></div>
-                <div class="inner-yao" id="yao-2"></div>
-                <div class="inner-yao" id="yao-1"></div>
+            <!-- 中間爻卦槽：嚴格由下往上 (yao-1 在最底) -->
+            <div class="hexagram-slot">
+                <div class="yao-line" id="yao-6"></div>
+                <div class="yao-line" id="yao-5"></div>
+                <div class="yao-line" id="yao-4"></div>
+                <div class="yao-line" id="yao-3"></div>
+                <div class="yao-line" id="yao-2"></div>
+                <div class="yao-line" id="yao-1"></div>
             </div>
 
-            <!-- 展開後：獨立右半邊 (白魚 + 下方小圓點) -->
-            <div class="taiji-right-block">
-                <svg width="60" height="130" viewBox="0 0 50 100">
+            <!-- 分離右半塊：白魚 + 下方小圓點 -->
+            <div class="taiji-split-right">
+                <svg width="60" height="120" viewBox="0 0 50 100">
                     <path d="M0,100 A50,50 0 0,1 0,0 A25,25 0 0,1 0,50 A25,25 0 0,0 0,100 Z" fill="#00f3ff"/>
-                    <circle cx="8" cy="75" r="5" fill="#050508"/>
+                    <circle cx="8" cy="75" r="5" fill="#030305"/>
                 </svg>
             </div>
 
         </div>
     </div>
 
-    <div class="status-bar" id="statusBar">系統就緒：請點擊中央太極核心開始由下往上擲初爻</div>
+    <div class="status-msg" id="statusMsg">系統就緒：點擊中央太極核心開始由下往上擲初爻</div>
 
     <div class="control-panel">
         <button class="cyber-btn" id="tossBtn">擲爻 (1/6)</button>
@@ -346,84 +331,79 @@
     </div>
 
     <script>
-        let currentYaoStep = 0;
-        const totalYaos = 6;
-        const centerStage = document.getElementById('centerStage');
+        let step = 0;
+        const maxStep = 6;
+        const coreArea = document.getElementById('coreArea');
         const tossBtn = document.getElementById('tossBtn');
         const resetBtn = document.getElementById('resetBtn');
-        const statusBar = document.getElementById('statusBar');
+        const statusMsg = document.getElementById('statusMsg');
 
-        function performToss() {
-            if (currentYaoStep >= totalYaos) {
-                statusBar.textContent = "六爻已全數擲畢，請將外圈卦象拖曳填入中央區域。";
+        function executeToss() {
+            if (step >= maxStep) {
+                statusMsg.textContent = "六爻已全數擲畢，請將外圈卦象拖曳填入中央區域。";
                 return;
             }
 
-            if (currentYaoStep === 0) {
-                centerStage.classList.add('expanded');
+            if (step === 0) {
+                coreArea.classList.add('active');
             }
 
-            currentYaoStep++;
-            const targetYao = document.getElementById(`yao-${currentYaoStep}`);
-            
-            const rand = Math.random();
-            if (rand < 0.25) {
-                targetYao.className = "inner-yao visible-flash";
-                statusBar.textContent = `第 ${currentYaoStep} 爻（由下往上）生成：捕捉到變爻閃爍！`;
-            } else if (rand < 0.6) {
-                targetYao.className = "inner-yao visible-dashed";
-                statusBar.textContent = `第 ${currentYaoStep} 爻（由下往上）生成：虛線建立。`;
+            step++;
+            const currentYao = document.getElementById(`yao-${step}`);
+            const dice = Math.random();
+
+            if (dice < 0.25) {
+                currentYao.className = "yao-line flash";
+                statusMsg.textContent = `第 ${step} 爻（由下往上）生成：捕捉到變爻閃爍！`;
+            } else if (dice < 0.6) {
+                currentYao.className = "yao-line dashed";
+                statusMsg.textContent = `第 ${step} 爻（由下往上）生成：虛線建立。`;
             } else {
-                targetYao.className = "inner-yao visible-solid";
-                statusBar.textContent = `第 ${currentYaoStep} 爻（由下往上）生成：實線鎖定。`;
+                currentYao.className = "yao-line solid";
+                statusMsg.textContent = `第 ${step} 爻（由下往上）生成：實線鎖定。`;
             }
 
-            if (currentYaoStep < totalYaos) {
-                tossBtn.textContent = `擲爻 (${currentYaoStep + 1}/6)`;
+            if (step < maxStep) {
+                tossBtn.textContent = `擲爻 (${step + 1}/6)`;
             } else {
                 tossBtn.textContent = `完成`;
-                statusBar.textContent = "六爻結構由下往上建構完成。";
+                statusMsg.textContent = "六爻結構由下往上建構完成。";
             }
         }
 
-        tossBtn.addEventListener('click', performToss);
-        centerStage.addEventListener('click', (e) => {
-            if (e.target.closest('.bagua-item')) return;
-            performToss();
+        tossBtn.addEventListener('click', executeToss);
+        coreArea.addEventListener('click', (e) => {
+            if (e.target.closest('.bagua-block')) return;
+            executeToss();
         });
 
         resetBtn.addEventListener('click', () => {
-            currentYaoStep = 0;
-            centerStage.classList.remove('expanded');
+            step = 0;
+            coreArea.classList.remove('active');
             tossBtn.textContent = "擲爻 (1/6)";
-            statusBar.textContent = "系統已重置，請重新點擊太極擲爻。";
+            statusMsg.textContent = "系統已重置，請重新點擊太極擲爻。";
             
-            for (let i = 1; i <= totalYaos; i++) {
-                const yao = document.getElementById(`yao-${i}`);
-                yao.className = "inner-yao";
+            for (let i = 1; i <= maxStep; i++) {
+                document.getElementById(`yao-${i}`).className = "yao-line";
             }
         });
 
-        const baguaItems = document.querySelectorAll('.bagua-item');
-        baguaItems.forEach(item => {
-            item.addEventListener('dragstart', (e) => {
-                e.dataTransfer.setData('text/plain', item.dataset.gua);
+        // 拖曳功能
+        document.querySelectorAll('.bagua-block').forEach(block => {
+            block.addEventListener('dragstart', (e) => {
+                e.dataTransfer.setData('text/plain', block.dataset.gua);
             });
         });
 
-        centerStage.addEventListener('dragover', (e) => e.preventDefault());
-        centerStage.addEventListener('drop', (e) => {
+        coreArea.addEventListener('dragover', (e) => e.preventDefault());
+        coreArea.addEventListener('drop', (e) => {
             e.preventDefault();
-            const guaName = e.dataTransfer.getData('text/plain');
-            if (currentYaoStep < 6) {
-                statusBar.textContent = `請先完成六次擲爻，目前進度 (${currentYaoStep}/6)`;
+            const gua = e.dataTransfer.getData('text/plain');
+            if (step < 6) {
+                statusMsg.textContent = `請先完成六次擲爻，目前進度 (${step}/6)`;
                 return;
             }
-            statusBar.textContent = `成功將 [ ${guaName}卦 ] 填入核心區域！`;
-            centerStage.style.filter = 'drop-shadow(0 0 10px var(--neon-amber))';
-            setTimeout(() => {
-                centerStage.style.filter = 'none';
-            }, 1000);
+            statusMsg.textContent = `成功將 [ ${gua}卦 ] 填入核心區域！`;
         });
     </script>
 </body>
