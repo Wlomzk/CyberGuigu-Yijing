@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cyber I-Ching 賽博易經占卜儀 v7.1 完美修正版</title>
+    <title>Cyber I-Ching 賽博易經占卜儀 v7.2 後天八卦卦象版</title>
     <style>
         :root {
             --bg-color: #050507;
@@ -89,12 +89,26 @@
             cursor: pointer;
         }
 
+        /* 區塊外的寬邊文字：稍微放大並獨立反向旋轉保持正向 */
+        .trap-label {
+            position: absolute;
+            top: -26px;
+            left: 50%;
+            transform: translateX(-50%) rotate(calc(-1 * var(--angle)));
+            font-size: 0.95rem;
+            font-weight: bold;
+            color: var(--neon-red);
+            text-shadow: 0 0 8px var(--neon-red);
+            pointer-events: none;
+            white-space: nowrap;
+        }
+
         .trap-block {
             width: 100%;
             height: 100%;
             background: var(--panel-bg);
             border: 1px solid rgba(255, 51, 51, 0.4);
-            /* 修正：外寬內窄（頂部外側寬、底部內側窄） */
+            /* 外寬內窄梯形維持不變 */
             clip-path: polygon(0% 0%, 100% 0%, 80% 100%, 20% 100%);
             display: flex;
             align-items: center;
@@ -108,14 +122,39 @@
             box-shadow: 0 0 12px var(--neon-red);
         }
 
-        .trap-content {
+        /* 區塊內卦象繪製（填滿約 80% 空間） */
+        .trigram-symbol {
+            width: 72%;
+            height: 72%;
             display: flex;
+            flex-direction: column;
+            justify-content: space-around;
             align-items: center;
-            justify-content: center;
-            gap: 6px;
-            font-size: 0.75rem;
-            color: var(--neon-red);
-            transform: rotate(calc(-1 * var(--angle)));
+        }
+
+        .t-line {
+            width: 100%;
+            height: 4px;
+            border-radius: 2px;
+        }
+
+        .t-line.solid {
+            background: var(--neon-red);
+            box-shadow: 0 0 5px var(--neon-red);
+        }
+
+        .t-line.broken {
+            display: flex;
+            justify-content: space-between;
+            background: transparent;
+        }
+
+        .t-line.broken span {
+            width: 42%;
+            height: 100%;
+            background: var(--neon-red);
+            box-shadow: 0 0 5px var(--neon-red);
+            border-radius: 2px;
         }
 
         /* 中央互動核心 */
@@ -262,22 +301,104 @@
 <body>
 
     <header>
-        <h1>Cyber I-Ching v7.1</h1>
-        <p>外寬內窄修正 ＋ 85% 縮放大小 ＋ 精準環繞</p>
+        <h1>Cyber I-Ching v7.2</h1>
+        <p>後天八卦排序 ＋ 內嵌卦象圖案 ＋ 寬邊放大字體</p>
     </header>
 
     <div class="stage-container">
+        <!-- 外圍八卦環繞層：依後天八卦方位順序排列 -->
         <div class="ring-container">
-            <div class="trap-item" style="--angle: 0deg;"><div class="trap-block"><div class="trap-content"><span>☰</span><span>乾</span></div></div></div>
-            <div class="trap-item" style="--angle: 45deg;"><div class="trap-block"><div class="trap-content"><span>☱</span><span>兌</span></div></div></div>
-            <div class="trap-item" style="--angle: 90deg;"><div class="trap-block"><div class="trap-content"><span>☲</span><span>離</span></div></div></div>
-            <div class="trap-item" style="--angle: 135deg;"><div class="trap-block"><div class="trap-content"><span>☳</span><span>震</span></div></div></div>
-            <div class="trap-item" style="--angle: 180deg;"><div class="trap-block"><div class="trap-content"><span>☴</span><span>巽</span></div></div></div>
-            <div class="trap-item" style="--angle: 225deg;"><div class="trap-block"><div class="trap-content"><span>☵</span><span>坎</span></div></div></div>
-            <div class="trap-item" style="--angle: 270deg;"><div class="trap-block"><div class="trap-content"><span>☶</span><span>艮</span></div></div></div>
-            <div class="trap-item" style="--angle: 315deg;"><div class="trap-block"><div class="trap-content"><span>☷</span><span>坤</span></div></div></div>
+            <!-- 0deg (正上): 離 -->
+            <div class="trap-item" style="--angle: 0deg;">
+                <div class="trap-label">離</div>
+                <div class="trap-block">
+                    <div class="trigram-symbol">
+                        <div class="t-line solid"></div>
+                        <div class="t-line broken"><span></span><span></span></div>
+                        <div class="t-line solid"></div>
+                    </div>
+                </div>
+            </div>
+            <!-- 45deg: 坤 -->
+            <div class="trap-item" style="--angle: 45deg;">
+                <div class="trap-label">坤</div>
+                <div class="trap-block">
+                    <div class="trigram-symbol">
+                        <div class="t-line broken"><span></span><span></span></div>
+                        <div class="t-line broken"><span></span><span></span></div>
+                        <div class="t-line broken"><span></span><span></span></div>
+                    </div>
+                </div>
+            </div>
+            <!-- 90deg (正右): 兌 -->
+            <div class="trap-item" style="--angle: 90deg;">
+                <div class="trap-label">兌</div>
+                <div class="trap-block">
+                    <div class="trigram-symbol">
+                        <div class="t-line broken"><span></span><span></span></div>
+                        <div class="t-line solid"></div>
+                        <div class="t-line solid"></div>
+                    </div>
+                </div>
+            </div>
+            <!-- 135deg: 乾 -->
+            <div class="trap-item" style="--angle: 135deg;">
+                <div class="trap-label">乾</div>
+                <div class="trap-block">
+                    <div class="trigram-symbol">
+                        <div class="t-line solid"></div>
+                        <div class="t-line solid"></div>
+                        <div class="t-line solid"></div>
+                    </div>
+                </div>
+            </div>
+            <!-- 180deg (正下): 坎 -->
+            <div class="trap-item" style="--angle: 180deg;">
+                <div class="trap-label">坎</div>
+                <div class="trap-block">
+                    <div class="trigram-symbol">
+                        <div class="t-line broken"><span></span><span></span></div>
+                        <div class="t-line solid"></div>
+                        <div class="t-line broken"><span></span><span></span></div>
+                    </div>
+                </div>
+            </div>
+            <!-- 225deg: 艮 -->
+            <div class="trap-item" style="--angle: 225deg;">
+                <div class="trap-label">艮</div>
+                <div class="trap-block">
+                    <div class="trigram-symbol">
+                        <div class="t-line solid"></div>
+                        <div class="t-line broken"><span></span><span></span></div>
+                        <div class="t-line broken"><span></span><span></span></div>
+                    </div>
+                </div>
+            </div>
+            <!-- 270deg (正左): 震 -->
+            <div class="trap-item" style="--angle: 270deg;">
+                <div class="trap-label">震</div>
+                <div class="trap-block">
+                    <div class="trigram-symbol">
+                        <div class="t-line broken"><span></span><span></span></div>
+                        <div class="t-line broken"><span></span><span></span></div>
+                        <div class="t-line solid"></div>
+                    </div>
+                </div>
+            </div>
+            <!-- 315deg: 巽 -->
+            <div class="trap-item" style="--angle: 315deg;">
+                <div class="trap-label">巽</div>
+                <div class="trap-block">
+                    <div class="trigram-symbol">
+                        <div class="t-line solid"></div>
+                        <div class="t-line solid"></div>
+                        <div class="t-line broken"><span></span><span></span></div>
+                    </div>
+                </div>
+            </div>
         </div>
 
+        <!-- 中央互動核心 -->
         <div class="core-area" id="coreArea" title="點擊進行擲爻">
             <div class="taijitu-pair">
                 <div class="fish-left">
